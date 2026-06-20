@@ -30,6 +30,12 @@ export class UploadDocumentDto {
   description?: string;
 
   @IsOptional()
+  @IsString()
+  @MaxLength(500)
+  @ApiPropertyOptional()
+  fileUrl?: string;
+
+  @IsOptional()
   @IsArray()
   @ApiPropertyOptional()
   tags?: string[];

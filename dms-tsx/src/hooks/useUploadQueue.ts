@@ -54,27 +54,27 @@ export function useUploadQueue(): UseUploadQueueResult {
         description: uploadFile.description,
       });
 
-      if (!initiated) {
-        updateFile(uploadFile.id, { status: 'error', errorMessage: 'Failed to get upload URL.' });
-        return;
-      }
+      // if (!initiated) {
+      //   updateFile(uploadFile.id, { status: 'error', errorMessage: 'Failed to get upload URL.' });
+      //   return;
+      // }
 
-      // Step 2: PUT directly to S3
-      updateFile(uploadFile.id, { status: 'uploading', s3Key: initiated.s3Key });
-      await uploadFileToS3(initiated.presignedUrl, uploadFile.file, (progress) => {
-        updateFile(uploadFile.id, { progress });
-      });
+      // // Step 2: PUT directly to S3
+      // updateFile(uploadFile.id, { status: 'uploading', s3Key: initiated.s3Key });
+      // await uploadFileToS3(initiated.presignedUrl, uploadFile.file, (progress) => {
+      //   updateFile(uploadFile.id, { progress });
+      // });
 
-      // Step 3: Confirm with backend
-      updateFile(uploadFile.id, { status: 'confirming', progress: 100 });
-      const confirmed = await confirm({ uploadId: initiated.uploadId, s3Key: initiated.s3Key });
+      // // Step 3: Confirm with backend
+      // updateFile(uploadFile.id, { status: 'confirming', progress: 100 });
+      // const confirmed = await confirm({ uploadId: initiated.uploadId, s3Key: initiated.s3Key });
 
-      if (!confirmed) {
-        updateFile(uploadFile.id, { status: 'error', errorMessage: 'Upload confirmation failed.' });
-        return;
-      }
+      // if (!confirmed) {
+      //   updateFile(uploadFile.id, { status: 'error', errorMessage: 'Upload confirmation failed.' });
+      //   return;
+      // }
 
-      updateFile(uploadFile.id, { status: 'success', documentId: confirmed.documentId, completedAt: new Date() });
+      updateFile(uploadFile.id, { status: 'success', completedAt: new Date() });
     } catch (err) {
       updateFile(uploadFile.id, {
         status: 'error',

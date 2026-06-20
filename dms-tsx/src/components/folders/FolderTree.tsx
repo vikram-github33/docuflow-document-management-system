@@ -176,7 +176,7 @@ function FolderNode({
       }}
     >
       {hasChildren &&
-        node.children.map((child) => (
+        node.children.map((child: any) => (
           <FolderNode
             key={child.id}
             node={child}
@@ -204,28 +204,51 @@ export const FolderTree: React.FC<FolderTreeProps> = ({
   }, [refreshTrigger]);
 
   // Auto-expand ancestors of the selected folder
+  // useEffect(() => {
+  //   if (!selectedId || !tree.length) return;
+
+  //   function findAncestors(
+  //     nodes: FolderTreeNode[],
+  //     targetId: string,
+  //     ancestors: string[] = [],
+  //   ): string[] | null {
+  //     for (const n of nodes) {
+  //       if (n.id === targetId) return ancestors;
+  //       const found = findAncestors(n.children, targetId, [...ancestors, n.id]);
+  //       if (found) return found;
+  //     }
+  //     return null;
+  //   }
+
+  //   const ancestors = findAncestors(tree, selectedId);
+  //   console.log("ancestors",ancestors)
+  //   if (ancestors && ancestors.length > 0) {
+  //     setExpandedItems((prev) => Array.from(new Set([...prev, ...ancestors])));
+  //   }
+  // }, [selectedId, tree]);
+  function findNode(
+    nodes: FolderTreeNode[],
+    id: string,
+  ): FolderTreeNode | null {
+    for (const node of nodes) {
+      if (node.id === id) return node;
+
+      const found = findNode(node.children, id);
+      if (found) return found;
+    }
+
+    return null;
+  }
+
   useEffect(() => {
     if (!selectedId || !tree.length) return;
 
-    function findAncestors(
-      nodes: FolderTreeNode[],
-      targetId: string,
-      ancestors: string[] = [],
-    ): string[] | null {
-      for (const n of nodes) {
-        if (n.id === targetId) return ancestors;
-        const found = findAncestors(n.children, targetId, [...ancestors, n.id]);
-        if (found) return found;
-      }
-      return null;
-    }
+    const selectedNode = findNode(tree, selectedId);
 
-    const ancestors = findAncestors(tree, selectedId);
-    if (ancestors && ancestors.length > 0) {
-      setExpandedItems((prev) => Array.from(new Set([...prev, ...ancestors])));
+    if (selectedNode?.children?.length) {
+      setExpandedItems((prev) => Array.from(new Set([...prev, selectedId])));
     }
   }, [selectedId, tree]);
-
   if (loading) {
     return (
       <Box

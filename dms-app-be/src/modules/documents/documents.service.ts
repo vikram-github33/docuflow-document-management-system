@@ -10,25 +10,33 @@ export class DocumentsService {
   constructor(
     @InjectRepository(Document)
     private readonly documentRepository: Repository<Document>,
-    private readonly awsService: AwsService
+    private readonly awsService: AwsService,
   ) {}
   async upload(file: Express.Multer.File, body: UploadDocumentDto) {
-    const fileKey = `documents/${body.folderId}/${Date.now()}-${file.originalname}`;
-      console.log("process.env.AWS_BUCKET_NAME",process.env.AWS_S3_BUCKET)
-    await this.awsService.uploadFile(file, fileKey);
+    const fileKey = `documents/${Date.now()}-${file.originalname}`;
+    console.log('process.env.AWS_BUCKET_NAME', process.env.AWS_S3_BUCKET);
+    const uploadResult:any = await this.awsService.uploadFile(file, fileKey);
 
+    // const document = this.documentRepository.create({
+    //   fileName: file.originalname,
+    //  fileType: file.mimetype,
+    //   extension: path.extname(file.originalname),
+    //   sizeBytes: file.size.toString(),
+
+    //   folderId: body.folderId,
+    //  ownerId: body.ownerId,
+    // });
+    console.log("uploadResult",uploadResult)
     const document = this.documentRepository.create({
-      file: file.originalname,
-     fileType: file.mimetype,
-      extension: path.extname(file.originalname),
-      sizeBytes: file.size.toString(),
-      s3Key: fileKey,
-      s3Bucket: process.env.AWS_S3_BUCKET,
-      s3Region: process.env.AWS_REGION,
+      fileName: file.originalname,
+      fileUrl: uploadResult,
+      // fileSize: file.size,
+      fileType: file.mimetype,
+      tags:body.tags,
+      description:body.description,
       folderId: body.folderId,
-    //   ownerId: body.ownerId,
+      ownerId: '8f6d1d1f-5f6b-4d1c-a7f2-9b8d3e7c4a21',
     });
-
     return this.documentRepository.save(document);
   }
 }

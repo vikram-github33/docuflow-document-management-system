@@ -15,7 +15,7 @@ interface CreateFolderDialogProps {
   onClose: () => void;
   onSuccess: () => void;           // caller increments refreshTrigger
   parentFolder?: FolderTreeNode | null;
-  allFolders: FolderTreeNode[];
+  allFolders:any;
 }
 
 interface FormState {

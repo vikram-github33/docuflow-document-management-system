@@ -30,7 +30,7 @@ export interface FolderTreeNode {
   icon: string;
   isArchived: boolean;
   documentCount: number;
-  children: FolderTreeNode[];
+  children:any;
 }
 
 export interface CreateFolderPayload {

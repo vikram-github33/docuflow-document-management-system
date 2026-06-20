@@ -14,27 +14,21 @@ import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 export class AwsService {
   private readonly s3Client: S3Client;
 
-  constructor(
-    private readonly configService: ConfigService,
-  ) {
+  constructor(private readonly configService: ConfigService) {
     this.s3Client = new S3Client({
       region: this.configService.get<string>('AWS_REGION')!,
       credentials: {
         accessKeyId: this.configService.get<string>('AWS_ACCESS_KEY_ID')!,
-        secretAccessKey: this.configService.get<string>('AWS_SECRET_ACCESS_KEY')!,
+        secretAccessKey: this.configService.get<string>(
+          'AWS_SECRET_ACCESS_KEY',
+        )!,
       },
     });
   }
 
-  async uploadFile(
-    file: Express.Multer.File,
-    key: string,
-  ) {
+  async uploadFile(file: Express.Multer.File, key: string) {
     const command = new PutObjectCommand({
-      Bucket:
-        this.configService.get(
-          'AWS_S3_BUCKET',
-        ),
+      Bucket: this.configService.get('AWS_S3_BUCKET'),
 
       Key: key,
 
@@ -44,37 +38,25 @@ export class AwsService {
     });
 
     await this.s3Client.send(command);
-
-    return key;
+    const fileUrl = `https://${process.env.AWS_S3_BUCKET}.s3.${process.env.AWS_REGION}.amazonaws.com/${key}`;
+    return fileUrl;
   }
 
-  async getSignedDownloadUrl(
-    key: string,
-  ) {
+  async getSignedDownloadUrl(key: string) {
     const command = new GetObjectCommand({
-      Bucket:
-        this.configService.get(
-          'AWS_S3_BUCKET',
-        ),
+      Bucket: this.configService.get('AWS_S3_BUCKET'),
 
       Key: key,
     });
 
-    return getSignedUrl(
-      this.s3Client,
-      command,
-      {
-        expiresIn: 3600,
-      },
-    );
+    return getSignedUrl(this.s3Client, command, {
+      expiresIn: 3600,
+    });
   }
 
   async deleteFile(key: string) {
     const command = new DeleteObjectCommand({
-      Bucket:
-        this.configService.get(
-          'AWS_BUCKET_NAME',
-        ),
+      Bucket: this.configService.get('AWS_BUCKET_NAME'),
 
       Key: key,
     });

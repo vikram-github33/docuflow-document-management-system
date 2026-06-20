@@ -27,48 +27,44 @@ export class Document {
   folder: Folder;
 
   @Column({ length: 500 })
-  file: string;
+  fileName: string;
+
+  // @Column({
+  //   name: 'original_file_name',
+  //   length: 500,
+  // })
+  // originalFileName: string;
 
   @Column({ type: 'text', nullable: true })
   description?: string;
 
-  @Column({ name: 'file_type', length: 50, })
+  @Column('text', {
+    array: true,
+    nullable: true,
+  })
+  tags?: string[];
+
+  @Column({ name: 'file_type', length: 50 })
   fileType: string;
 
-  @Column({ length: 20 })
+  @Column({ length: 20, nullable: true })
   extension: string;
 
   @Column({
     name: 'size_bytes',
     type: 'bigint',
+    nullable: true,
   })
   sizeBytes: string;
 
   @Column({
     name: 'checksum_sha256',
     length: 64,
+    nullable: true,
   })
-  checksumSha256: string;
+  checksumSha256?: string;
 
   // AWS S3 Information
-
-  @Column({
-    name: 's3_key',
-    length: 1000,
-  })
-  s3Key: string;
-
-  @Column({
-    name: 's3_bucket',
-    length: 255,
-  })
-  s3Bucket: string;
-
-  @Column({
-    name: 's3_region',
-    length: 100,
-  })
-  s3Region: string;
 
   @Column({
     name: 'thumbnail_url',
@@ -76,6 +72,10 @@ export class Document {
     nullable: true,
   })
   thumbnailUrl?: string;
+
+  @ManyToOne(() => User)
+  @JoinColumn({ name: 'owner_id' })
+  owner: User;
 
   @Column({
     name: 'preview_url',
@@ -96,12 +96,18 @@ export class Document {
   })
   versionCount: number;
 
-  // @Column({ name: 'owner_id' })
-  // ownerId: string;
+  @Column({ name: 'owner_id' })
+  ownerId: string;
 
-  @ManyToOne(() => User)
-  @JoinColumn({ name: 'owner_id' })
-  owner: User;
+  // @ManyToOne(() => User)
+  // @JoinColumn({ name: 'owner_id' })
+  // owner: User;
+  @Column({
+    name: 'file_url',
+    length: 1000,
+    nullable:true
+  })
+  fileUrl: string;
 
   @Column({
     length: 30,

@@ -27,7 +27,7 @@ export const FolderManagementPage: React.FC = () => {
 
   useEffect(() => {
     dispatch(fetchFolderTree());
-  }, [dispatch]);
+  }, []);
 
   console.log(tree);
   return (

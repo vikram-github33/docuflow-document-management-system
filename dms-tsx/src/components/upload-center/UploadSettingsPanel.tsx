@@ -12,7 +12,7 @@ import SettingsIcon from '@mui/icons-material/Settings';
 import UploadIcon from '@mui/icons-material/Upload';
 import { fetchFolders } from '../../services/upload.service';
 import type { FolderOption, UploadSettings } from '../../types/upload.types';
-
+import { useAppDispatch, useAppSelector } from '../../redux/hooks';
 interface UploadSettingsPanelProps {
   settings: UploadSettings;
   onChange: (updated: UploadSettings) => void;
@@ -30,15 +30,18 @@ export const UploadSettingsPanel: React.FC<UploadSettingsPanelProps> = ({
 }) => {
   const [folders, setFolders] = useState<FolderOption[]>([]);
   const [loadingFolders, setLoadingFolders] = useState(false);
+  const { tree, loading, error } = useAppSelector(
+      (state) => state.folders
+    );
+  // useEffect(() => {
+  //   setLoadingFolders(true);
 
-  useEffect(() => {
-    setLoadingFolders(true);
-    fetchFolders()
-      .then(setFolders)
-      .catch(console.error)
-      .finally(() => setLoadingFolders(false));
-  }, []);
-
+  //   fetchFolders()
+  //     .then(setFolders)
+  //     .catch(console.error)
+  //     .finally(() => setLoadingFolders(false));
+  // }, []);
+    console.log("tree==========",tree)
   const update = (patch: Partial<UploadSettings>) => onChange({ ...settings, ...patch });
 
   return (
@@ -60,7 +63,7 @@ export const UploadSettingsPanel: React.FC<UploadSettingsPanelProps> = ({
         }}
       >
         <MenuItem value="">— Root —</MenuItem>
-        {folders.map((f) => (
+        {tree.map((f) => (
           <MenuItem key={f.id} value={f.id}>
             📁 {f.name}
           </MenuItem>

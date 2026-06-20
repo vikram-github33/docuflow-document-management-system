@@ -20,20 +20,20 @@ export async function initiateUpload(payload: InitiateUploadRequest): Promise<In
   return data;
 }
 
-export async function uploadFileToS3(
-  presignedUrl: string,
-  file: File,
-  onProgress?: UploadProgressCallback
-): Promise<void> {
-  await s3Client.put(presignedUrl, file, {
-    headers: { 'Content-Type': file.type },
-    onUploadProgress: (event) => {
-      if (onProgress && event.total) {
-        onProgress(Math.round((event.loaded * 100) / event.total));
-      }
-    },
-  });
-}
+// export async function uploadFileToS3(
+//   presignedUrl: string,
+//   file: File,
+//   onProgress?: UploadProgressCallback
+// ): Promise<void> {
+//   await s3Client.put(presignedUrl, file, {
+//     headers: { 'Content-Type': file.type },
+//     onUploadProgress: (event) => {
+//       if (onProgress && event.total) {
+//         onProgress(Math.round((event.loaded * 100) / event.total));
+//       }
+//     },
+//   });
+// }
 
 export async function confirmUpload(payload: ConfirmUploadRequest): Promise<ConfirmUploadResponse> {
   const { data } = await apiClient.post<ConfirmUploadResponse>(API_ENDPOINTS.CONFIRM_UPLOAD, payload);
