@@ -15,6 +15,8 @@ import { FileIcon, StatusPill } from '../components/ui/SharedUI';
 import { mockDocuments, mockFolders } from '../data/mockData';
 import { Document, Folder, DocType } from '../types';
 import { useNavigate } from 'react-router-dom';
+// import FolderTree from 'components/Folder/FolderTree';
+import { FolderManagementPage } from './folder/FolderManagementPage';
 
 type ViewMode = 'grid' | 'list';
 
@@ -109,7 +111,7 @@ const DocumentExplorer: React.FC = () => {
       <Box sx={{ flex: 1, display: 'flex', flexDirection: 'column', minWidth: 0 }}>
         {/* Toolbar */}
         <Paper elevation={0} sx={{ p: 2, border: '1px solid', borderColor: 'grey.200', borderRadius: 3, mb: 2 }}>
-          <Breadcrumbs sx={{ mb: 1.5, fontSize: '0.8rem' }}>
+          {/* <Breadcrumbs sx={{ mb: 1.5, fontSize: '0.8rem' }}>
             <Link underline="hover" color="primary" href="#" sx={{ fontSize: '0.8rem' }}>Home</Link>
             <Link underline="hover" color="primary" href="#" sx={{ fontSize: '0.8rem' }}>Documents</Link>
             <Typography sx={{ fontSize: '0.8rem', fontWeight: 500 }}>Finance</Typography>
@@ -143,12 +145,12 @@ const DocumentExplorer: React.FC = () => {
                 sx={{ fontSize: '0.6875rem', cursor: 'pointer', ...(filterType === value ? { bgcolor: '#EFF6FF', color: 'primary.main', border: '1px solid #BFDBFE' } : { borderColor: 'grey.300' }) }}
               />
             ))}
-          </Box>
+          </Box> */}
+          <FolderManagementPage/>
         </Paper>
 
         {/* Files */}
-        <Paper elevation={0} sx={{ border: '1px solid', borderColor: 'grey.200', borderRadius: 3, flex: 1, overflow: 'auto' }}>
-          {/* Folders */}
+        {/* <Paper elevation={0} sx={{ border: '1px solid', borderColor: 'grey.200', borderRadius: 3, flex: 1, overflow: 'auto' }}>
           <Box sx={{ p: 2, pb: 0 }}>
             <Typography variant="overline" sx={{ color: 'text.secondary', fontSize: '0.65rem' }}>Folders</Typography>
             <Grid container spacing={1.5} sx={{ mt: 0.5, mb: 2 }}>
@@ -182,11 +184,11 @@ const DocumentExplorer: React.FC = () => {
               ))}
             </Box>
           )}
-        </Paper>
+        </Paper> */}
       </Box>
-
+      {/* <FolderTree/> */}
       {/* Detail Panel */}
-      {selected && (
+      {/* {selected && (
         <Paper elevation={0} sx={{ width: 260, border: '1px solid', borderColor: 'grey.200', borderRadius: 3, display: 'flex', flexDirection: 'column', overflow: 'auto', flexShrink: 0 }}>
           <Box sx={{ p: 2, borderBottom: '1px solid', borderColor: 'grey.100', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
             <Typography sx={{ fontWeight: 600, fontSize: '0.8125rem' }}>Document details</Typography>
@@ -224,7 +226,7 @@ const DocumentExplorer: React.FC = () => {
             </Box>
           </Box>
         </Paper>
-      )}
+      )} */}
     </Box>
   );
 };

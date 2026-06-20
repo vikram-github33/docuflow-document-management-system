@@ -7,13 +7,14 @@ export function useFolderTree() {
   const [tree, setTree] = useState<FolderTreeNode[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-
+  
   const fetchTree = useCallback(async () => {
     setLoading(true);
     setError(null);
     try {
       const data = await folderService.getFolderTree();
       setTree(data);
+      console.log("data===",data)
     } catch (err: any) {
       setError(err?.response?.data?.message ?? 'Failed to load folders');
     } finally {

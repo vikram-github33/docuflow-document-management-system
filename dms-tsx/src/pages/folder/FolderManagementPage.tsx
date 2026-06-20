@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   Box, Button, Typography, Paper, Breadcrumbs,
 } from '@mui/material';
@@ -9,6 +9,9 @@ import { FolderDetails } from '../../components/folders/FolderDetails';
 import { CreateFolderDialog } from '../../components/folders/CreateFolderDialog';
 import { useFolderTree } from '../../hooks/useFolderHooks';
 import type { FolderTreeNode } from '../../types/folder.types';
+import { useAppDispatch, useAppSelector } from '../../redux/hooks';
+import { fetchFolderTree } from '../../redux/slices/folderSlice';
+//import { useDispatch, useSelector } from 'react-redux';
 
 export const FolderManagementPage: React.FC = () => {
   const [selectedFolder, setSelectedFolder] = useState<FolderTreeNode | null>(null);
@@ -16,9 +19,17 @@ export const FolderManagementPage: React.FC = () => {
   // Incrementing this triggers FolderTree to re-fetch
   const [refreshTick, setRefreshTick] = useState(0);
   const refresh = () => setRefreshTick((n) => n + 1);
+    const dispatch = useAppDispatch();
 
-  const { tree } = useFolderTree();
+  const { tree, loading, error } = useAppSelector(
+    (state) => state.folders
+  );
 
+  useEffect(() => {
+    dispatch(fetchFolderTree());
+  }, [dispatch]);
+
+  console.log(tree);
   return (
     <Box sx={{ display: 'flex', flexDirection: 'column', height: '100vh', bgcolor: 'grey.50' }}>
 

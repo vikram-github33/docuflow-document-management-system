@@ -48,7 +48,6 @@ export const CreateFolderDialog: React.FC<CreateFolderDialogProps> = ({
   const [form, setForm] = useState<FormState>({ ...DEFAULT_FORM });
   const [errors, setErrors] = useState<FormErrors>({});
   const { createFolder, loading, error: apiError, clearError } = useCreateFolder();
-
   // Reset form when dialog opens
   useEffect(() => {
     if (open) {
