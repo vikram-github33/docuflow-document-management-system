@@ -1,5 +1,5 @@
 import { useState, useCallback, useRef } from 'react';
-import { uploadFileToS3 } from '../services/upload.service';
+// import { uploadFileToS3 } from '../services/upload.service';
 import { useInitiateUpload } from './useInitiateUpload';
 import { useConfirmUpload } from './useConfirmUpload';
 import { createUploadFile, validateFile, isTerminalStatus } from '../utils/upload.utils';

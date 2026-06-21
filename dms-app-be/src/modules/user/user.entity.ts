@@ -5,8 +5,10 @@ import {
   CreateDateColumn,
   UpdateDateColumn,
   DeleteDateColumn,
+  OneToMany,
 } from 'typeorm';
-
+import { Folder } from '../folders/folders.entity';
+import { Document } from '../documents/documents.entity';
 export enum UserRole {
   ADMIN = 'ADMIN',
   MANAGER = 'MANAGER',
@@ -94,6 +96,12 @@ export class User {
     nullable: true,
   })
   passwordChangedAt?: Date;
+
+  @OneToMany(() => Folder, (folder) => folder.owner)
+  folders: Folder[];
+
+  @OneToMany(() => Document, (document) => document.owner)
+  documents: Document[];
 
   @CreateDateColumn({
     name: 'created_at',

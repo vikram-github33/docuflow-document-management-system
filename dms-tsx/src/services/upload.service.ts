@@ -11,7 +11,6 @@ import type {
 export type UploadProgressCallback = (progressPercent: number) => void;
 
 export async function initiateUpload(payload: InitiateUploadRequest): Promise<InitiateUploadResponse> {
-  console.log("payload",payload)
   const { data } = await apiClient.post<InitiateUploadResponse>(API_ENDPOINTS.INITIATE_UPLOAD, payload,{
       headers: {
         'Content-Type': 'multipart/form-data',
