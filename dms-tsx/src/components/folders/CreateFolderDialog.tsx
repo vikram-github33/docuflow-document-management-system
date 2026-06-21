@@ -55,7 +55,6 @@ export const CreateFolderDialog: React.FC<CreateFolderDialogProps> = ({
       setErrors({});
       clearError();
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [open, parentFolder?.id]);
 
   const update = (patch: Partial<FormState>) => setForm((f) => ({ ...f, ...patch }));

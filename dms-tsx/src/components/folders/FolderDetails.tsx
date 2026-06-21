@@ -65,7 +65,6 @@ export const FolderDetails: React.FC<FolderDetailsProps> = ({
 
   useEffect(() => {
     if (folder?.id) fetchFolder(folder.id);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [folder?.id]);
 
   if (!folder) {

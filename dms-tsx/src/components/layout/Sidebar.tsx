@@ -84,7 +84,7 @@ const Sidebar: React.FC<SidebarProps> = ({ open }) => {
         <Box sx={{ width: 30, height: 30, bgcolor: 'primary.main', borderRadius: '8px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
           <Typography sx={{ color: '#fff', fontSize: 16, fontWeight: 700 }}>D</Typography>
         </Box>
-        <Typography sx={{ fontWeight: 600, fontSize: 15, color: 'text.primary' }}>DocVault</Typography>
+        <Typography sx={{ fontWeight: 600, fontSize: 15, color: 'text.primary' }}>DocuFlow</Typography>
         <Box sx={{ ml: 'auto', bgcolor: '#EFF6FF', color: 'primary.main', fontSize: 10, fontWeight: 600, px: 0.8, py: 0.2, borderRadius: 10, border: '1px solid #BFDBFE' }}>
           Pro
         </Box>

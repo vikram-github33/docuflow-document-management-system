@@ -90,7 +90,7 @@ export function useUploadQueue(): UseUploadQueueResult {
         processFile(nextPending);
       }
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+
   }, [initiate, confirm, updateFile]);
 
   const addFiles = useCallback((newFiles: File[], settings: UploadSettings) => {

@@ -32,7 +32,7 @@ const Login: React.FC<LoginProps> = ({ onLogin }) => {
           <Box sx={{ width: 40, height: 40, bgcolor: 'primary.main', borderRadius: 2, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
             <Typography sx={{ color: '#fff', fontWeight: 700, fontSize: 20 }}>D</Typography>
           </Box>
-          <Typography sx={{ fontWeight: 700, fontSize: 20, color: 'text.primary' }}>DocVault</Typography>
+          <Typography sx={{ fontWeight: 700, fontSize: 20, color: 'text.primary' }}>DocuFlow</Typography>
         </Box>
 
         {!mfa ? (

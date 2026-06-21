@@ -16,7 +16,7 @@ export class FoldersController {
   @Post()
   @HttpCode(HttpStatus.CREATED)
   create(@Body() dto: CreateFolderDto, @Request() req: any) {
-    const ownerId = req.user?.id ?? '8f6d1d1f-5f6b-4d1c-a7f2-9b8d3e7c4a21';
+    const ownerId = req.user?.id ?? '6e498a66-b48d-4dea-acb1-dda2104b6606';
     return this.foldersService.createFolder(dto, ownerId);
   }
 

@@ -323,7 +323,6 @@ export const FolderTree: React.FC<FolderTreeProps> = ({
   // Fetch on mount + when refreshTrigger changes
   useEffect(() => {
     dispatch(fetchFolderTree());
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [refreshTrigger]);
 
   // Auto-expand ancestors of selected folder
