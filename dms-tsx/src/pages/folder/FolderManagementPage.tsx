@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import {
   Box, Button, Typography, Paper, Breadcrumbs,
 } from '@mui/material';
@@ -7,33 +7,31 @@ import FolderIcon from '@mui/icons-material/Folder';
 import { FolderTree } from '../../components/folders/FolderTree';
 import { FolderDetails } from '../../components/folders/FolderDetails';
 import { CreateFolderDialog } from '../../components/folders/CreateFolderDialog';
-import { useFolderTree } from '../../hooks/useFolderHooks';
-import type { FolderTreeNode } from '../../types/folder.types';
 import { useAppDispatch, useAppSelector } from '../../redux/hooks';
-import { fetchFolderTree } from '../../redux/slices/folderSlice';
-//import { useDispatch, useSelector } from 'react-redux';
+import { fetchFolderTree, setSelectedFolder } from '../../redux/slices/folderSlice';
+import type { FolderDocument } from '../../types/folder.types';
 
 export const FolderManagementPage: React.FC = () => {
-  const [selectedFolder, setSelectedFolder] = useState<FolderTreeNode | null>(null);
+  const dispatch = useAppDispatch();
+  const { tree, selectedFolder } = useAppSelector((state) => state.folders);
+
   const [createDialogOpen, setCreateDialogOpen] = useState(false);
-  // Incrementing this triggers FolderTree to re-fetch
   const [refreshTick, setRefreshTick] = useState(0);
-  const refresh = () => setRefreshTick((n) => n + 1);
-    const dispatch = useAppDispatch();
 
-  const { tree, loading, error } = useAppSelector(
-    (state) => state.folders
-  );
-
-  useEffect(() => {
+  const refresh = () => {
+    setRefreshTick((n) => n + 1);
     dispatch(fetchFolderTree());
-  }, []);
+  };
 
-  console.log(tree);
+  const handleDocumentClick = (doc: FolderDocument, folderId: string) => {
+    // Open file in new tab — replace with preview modal if needed
+    window.open(doc.fileUrl, '_blank');
+  };
+
   return (
     <Box sx={{ display: 'flex', flexDirection: 'column', height: '100vh', bgcolor: 'grey.50' }}>
 
-      {/* ── Toolbar ──────────────────────────────────────────────────────────── */}
+      {/* ── Toolbar ──────────────────────────────────────────────────────── */}
       <Paper
         variant="outlined"
         square
@@ -46,7 +44,9 @@ export const FolderManagementPage: React.FC = () => {
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
           <FolderIcon color="primary" />
           <Box>
-            <Typography variant="h6" fontWeight={600} lineHeight={1.1}>Folder Management</Typography>
+            <Typography variant="h6" fontWeight={600} lineHeight={1.1}>
+              Folder Management
+            </Typography>
             <Typography variant="caption" color="text.secondary">
               Organise your documents into folders
             </Typography>
@@ -62,15 +62,20 @@ export const FolderManagementPage: React.FC = () => {
         </Button>
       </Paper>
 
-      {/* ── Breadcrumb (only when a folder is selected) ───────────────────── */}
+      {/* ── Breadcrumb ───────────────────────────────────────────────────── */}
       {selectedFolder && (
-        <Box sx={{ px: 3, py: 1, bgcolor: 'background.paper', borderBottom: '1px solid', borderColor: 'divider' }}>
+        <Box sx={{
+          px: 3, py: 1,
+          bgcolor: 'background.paper',
+          borderBottom: '1px solid',
+          borderColor: 'divider',
+        }}>
           <Breadcrumbs>
             <Typography
               variant="body2"
               color="text.secondary"
               sx={{ cursor: 'pointer', '&:hover': { textDecoration: 'underline' } }}
-              onClick={() => setSelectedFolder(null)}
+              onClick={() => dispatch(setSelectedFolder(null))}
             >
               All Folders
             </Typography>
@@ -79,51 +84,67 @@ export const FolderManagementPage: React.FC = () => {
               .filter(Boolean)
               .map((seg:any, i:any, arr:any) =>
                 i === arr.length - 1 ? (
-                  <Typography key={i} variant="body2" fontWeight={600} color="text.primary">{seg}</Typography>
+                  <Typography key={i} variant="body2" fontWeight={600} color="text.primary">
+                    {seg}
+                  </Typography>
                 ) : (
-                  <Typography key={i} variant="body2" color="text.secondary">{seg}</Typography>
+                  <Typography key={i} variant="body2" color="text.secondary">
+                    {seg}
+                  </Typography>
                 )
               )}
           </Breadcrumbs>
         </Box>
       )}
 
-      {/* ── Main layout ──────────────────────────────────────────────────────── */}
+      {/* ── Main layout ──────────────────────────────────────────────────── */}
       <Box sx={{ display: 'flex', flex: 1, overflow: 'hidden' }}>
 
-        {/* Left: Tree */}
+        {/* Left: Tree panel */}
         <Paper
           variant="outlined"
           square
           sx={{
-            width: 300, flexShrink: 0,
-            display: 'flex', flexDirection: 'column',
-            borderTop: 'none', borderBottom: 'none', borderLeft: 'none',
+            width: 300,
+            flexShrink: 0,
+            display: 'flex',
+            flexDirection: 'column',
+            borderTop: 'none',
+            borderBottom: 'none',
+            borderLeft: 'none',
             overflow: 'hidden',
           }}
         >
-          <Box sx={{ px: 2, py: 1.5, borderBottom: '1px solid', borderColor: 'divider' }}>
-            <Typography variant="caption" fontWeight={600} color="text.secondary" letterSpacing={1}>
+          <Box sx={{
+            px: 2, py: 1.5,
+            borderBottom: '1px solid',
+            borderColor: 'divider',
+          }}>
+            <Typography
+              variant="caption"
+              fontWeight={600}
+              color="text.secondary"
+              letterSpacing={1}
+            >
               FOLDERS
             </Typography>
           </Box>
           <Box sx={{ flex: 1, overflowY: 'auto', p: 1 }}>
             <FolderTree
-              selectedId={selectedFolder?.id ?? null}
-              onSelect={setSelectedFolder}
               refreshTrigger={refreshTick}
+              onDocumentClick={handleDocumentClick}
             />
           </Box>
         </Paper>
 
-        {/* Right: Details */}
+        {/* Right: Details panel */}
         <Box sx={{ flex: 1, overflow: 'auto', bgcolor: 'background.paper' }}>
           <FolderDetails
             folder={selectedFolder}
-            onClearSelection={() => setSelectedFolder(null)}
+            onClearSelection={() => dispatch(setSelectedFolder(null))}
             onDeleted={refresh}
             onEditClick={(id) => {
-              // TODO: wire up edit dialog
+              // TODO: open edit dialog
               console.log('Edit:', id);
             }}
             // Future: onUploadClick={(folderId) => navigate(`/upload?folderId=${folderId}`)}
@@ -131,11 +152,11 @@ export const FolderManagementPage: React.FC = () => {
         </Box>
       </Box>
 
-      {/* ── Create dialog ─────────────────────────────────────────────────── */}
+      {/* ── Create dialog ────────────────────────────────────────────────── */}
       <CreateFolderDialog
         open={createDialogOpen}
         onClose={() => setCreateDialogOpen(false)}
-        onSuccess={refresh}          // refresh tree + optionally auto-select
+        onSuccess={refresh}
         parentFolder={selectedFolder}
         allFolders={tree}
       />

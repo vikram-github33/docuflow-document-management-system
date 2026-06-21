@@ -105,7 +105,7 @@ export class Document {
   @Column({
     name: 'file_url',
     length: 1000,
-    nullable:true
+    nullable: true,
   })
   fileUrl: string;
 
@@ -147,6 +147,14 @@ export class Document {
   })
   lockedAt?: Date;
 
+  @Column({
+    name: 'ocr_text',
+    type: 'text',
+    nullable: true,
+  })
+  ocrText?: string;
+
+  
   @Column({
     name: 'ocr_status',
     length: 20,

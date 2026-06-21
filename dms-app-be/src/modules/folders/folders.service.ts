@@ -8,12 +8,15 @@ import { Folder } from './folders.entity';
 import { CreateFolderDto } from '././../../dto/folder/create-folder.dto';
 import { UpdateFolderDto } from '././../../dto/folder/update-folder.dto';
 import { FolderTreeNodeDto } from './../../dto/folder/folder-response.dto';
+import { Document } from '../documents/documents.entity';
 
 @Injectable()
 export class FoldersService {
   constructor(
     @InjectRepository(Folder)
     private readonly folderRepo: Repository<Folder>,
+    @InjectRepository(Document)
+    private readonly documentRepository: Repository<Document>,
     private readonly dataSource: DataSource,
   ) {}
 
@@ -36,6 +39,7 @@ export class FoldersService {
       icon: folder.icon??'',
       isArchived: folder.isArchived,
       documentCount: folder.documentCount,
+      documents:[],
       children: (folder.children ?? []).map((c) => this.toTreeNode(c)),
     };
   }
@@ -117,42 +121,96 @@ export class FoldersService {
     });
   }
 
-  async getFolderTree(): Promise<FolderTreeNodeDto[]> {
-    const all = await this.folderRepo.find({
-      order: { name: 'ASC' },
-      withDeleted: false,
+  // async getFolderTree(): Promise<FolderTreeNodeDto[]> {
+  //   const all = await this.folderRepo.find({
+  //     order: { name: 'ASC' },
+  //     withDeleted: false,
+  //   });
+
+  //   // Build map
+  //   const map = new Map<string, FolderTreeNodeDto>();
+  //   for (const f of all) {
+  //     map.set(f.id, {
+  //       id: f.id,
+  //       name: f.name,
+  //       path: f.path,
+  //       parentId: f.parentId ??null,
+  //       color: f.color??'',
+  //       icon: f.icon??'',
+  //       isArchived: f.isArchived,
+  //       documentCount: f.documentCount,
+  //       children: [],
+  //     });
+  //   }
+
+  //   const roots: FolderTreeNodeDto[] = [];
+
+  //   for (const f of all) {
+  //     const node = map.get(f.id)!;
+  //     if (f.parentId && map.has(f.parentId)) {
+  //       map.get(f.parentId)!.children.push(node);
+  //     } else {
+  //       roots.push(node);
+  //     }
+  //   }
+
+  //   return roots;
+  // }
+
+  async getFolderTreeWithFiles(): Promise<FolderTreeNodeDto[]> {
+  const folders = await this.folderRepo.find({
+    order: { name: 'ASC' },
+  });
+
+  const documents = await this.documentRepository.find();
+
+  const map = new Map<string, FolderTreeNodeDto>();
+
+  // Create folder nodes
+  for (const folder of folders) {
+    map.set(folder.id, {
+      id: folder.id,
+      name: folder.name,
+      path: folder.path,
+      parentId: folder.parentId ?? null,
+      color: folder.color ?? '',
+      icon: folder.icon ?? '',
+      isArchived: folder.isArchived,
+      documentCount: folder.documentCount,
+      documents: [],
+      children: [],
     });
-
-    // Build map
-    const map = new Map<string, FolderTreeNodeDto>();
-    for (const f of all) {
-      map.set(f.id, {
-        id: f.id,
-        name: f.name,
-        path: f.path,
-        parentId: f.parentId ??null,
-        color: f.color??'',
-        icon: f.icon??'',
-        isArchived: f.isArchived,
-        documentCount: f.documentCount,
-        children: [],
-      });
-    }
-
-    const roots: FolderTreeNodeDto[] = [];
-
-    for (const f of all) {
-      const node = map.get(f.id)!;
-      if (f.parentId && map.has(f.parentId)) {
-        map.get(f.parentId)!.children.push(node);
-      } else {
-        roots.push(node);
-      }
-    }
-
-    return roots;
   }
 
+  // Attach documents to folders
+  for (const doc of documents) {
+    const folderNode = map.get(doc.folderId);
+
+    if (folderNode) {
+      folderNode.documents.push({
+        id: doc.id,
+        fileName: doc.fileName,
+        fileUrl: doc.fileUrl,
+        fileType: doc.fileType,
+      });
+    }
+  }
+
+  const roots: FolderTreeNodeDto[] = [];
+
+  // Build tree
+  for (const folder of folders) {
+    const node = map.get(folder.id)!;
+
+    if (folder.parentId && map.has(folder.parentId)) {
+      map.get(folder.parentId)!.children.push(node);
+    } else {
+      roots.push(node);
+    }
+  }
+
+  return roots;
+}
  async getRootFolders(): Promise<Folder[]> {
   return this.folderRepo.find({
     where: {

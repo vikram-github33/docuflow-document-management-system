@@ -27,7 +27,7 @@ export class FoldersController {
 
   @Get('tree')
   getTree() {
-    return this.foldersService.getFolderTree();
+    return this.foldersService.getFolderTreeWithFiles();
   }
 
   @Get(':id')

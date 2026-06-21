@@ -7,6 +7,12 @@ import {
   DeleteDateColumn,
 } from 'typeorm';
 
+export enum UserRole {
+  ADMIN = 'ADMIN',
+  MANAGER = 'MANAGER',
+  USER = 'USER',
+}
+
 @Entity('users')
 export class User {
   @PrimaryGeneratedColumn('uuid')
@@ -25,6 +31,31 @@ export class User {
   lastName: string;
 
   @Column({
+    name: 'employee_id',
+    length: 50,
+    nullable: true,
+  })
+  employeeId?: string;
+
+  @Column({
+    length: 20,
+    nullable: true,
+  })
+  phone?: string;
+
+  @Column({
+    length: 100,
+    nullable: true,
+  })
+  department?: string;
+
+  @Column({
+    length: 100,
+    nullable: true,
+  })
+  designation?: string;
+
+  @Column({
     name: 'avatar_url',
     length: 500,
     nullable: true,
@@ -32,10 +63,11 @@ export class User {
   avatarUrl?: string;
 
   @Column({
-    length: 100,
-    nullable: true,
+    type: 'enum',
+    enum: UserRole,
+    default: UserRole.USER,
   })
-  department?: string;
+  role: UserRole;
 
   @Column({
     name: 'is_active',
@@ -55,6 +87,13 @@ export class User {
     nullable: true,
   })
   lastLoginIp?: string;
+
+  @Column({
+    name: 'password_changed_at',
+    type: 'timestamptz',
+    nullable: true,
+  })
+  passwordChangedAt?: Date;
 
   @CreateDateColumn({
     name: 'created_at',

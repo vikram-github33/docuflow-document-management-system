@@ -4,21 +4,11 @@ export interface FolderOwner {
   email: string;
 }
 
-export interface Folder {
+export interface FolderDocument {
   id: string;
-  name: string;
-  description: string | null;
-  path: string;
-  parentId: string | null;
-  color: string;
-  icon: string;
-  isArchived: boolean;
-  documentCount: number;
-  totalSize: number;
-  owner: FolderOwner;
-  children: Folder[];
-  createdAt: string;
-  updatedAt: string;
+  fileName: string;
+  fileUrl: string;
+  fileType: string;
 }
 
 export interface FolderTreeNode {
@@ -26,11 +16,34 @@ export interface FolderTreeNode {
   name: string;
   path: string;
   parentId: string | null;
-  color: string;
-  icon: string;
+  color?: string;
+  icon?: string;
   isArchived: boolean;
   documentCount: number;
-  children:any;
+  documents: FolderDocument[];
+  children: FolderTreeNode[];
+}
+
+export interface Folder {
+  id: string;
+  name: string;
+  description?: string;
+  path: string;
+  parentId?: string | null;
+  color?: string;
+  icon?: string;
+  inheritPermissions: boolean;
+  isArchived: boolean;
+  documentCount: number;
+  sizeBytes: string;
+  retentionDays?: number;
+  owner?: FolderOwner;
+  children: Folder[];
+  documents: FolderDocument[];
+  createdAt: string;
+  updatedAt: string;
+  deletedAt?: string;
+  totalSize: number;
 }
 
 export interface CreateFolderPayload {
@@ -39,6 +52,8 @@ export interface CreateFolderPayload {
   parentId?: string | null;
   color?: string;
   icon?: string;
+  inheritPermissions?: boolean;
+  retentionDays?: number;
 }
 
 export interface UpdateFolderPayload {
@@ -46,7 +61,9 @@ export interface UpdateFolderPayload {
   description?: string;
   color?: string;
   icon?: string;
+  inheritPermissions?: boolean;
   isArchived?: boolean;
+  retentionDays?: number;
 }
 
 export const FOLDER_COLORS: { label: string; value: string }[] = [

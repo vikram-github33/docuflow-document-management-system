@@ -41,7 +41,7 @@ export const UploadSettingsPanel: React.FC<UploadSettingsPanelProps> = ({
   //     .catch(console.error)
   //     .finally(() => setLoadingFolders(false));
   // }, []);
-    console.log("tree==========",tree)
+
   const update = (patch: Partial<UploadSettings>) => onChange({ ...settings, ...patch });
 
   return (

@@ -1,24 +1,8 @@
-export class FolderOwnerDto {
+export class DocumentTreeDto {
   id: string;
-  name: string;
-  email: string;
-}
-
-export class FolderResponseDto {
-  id: string;
-  name: string;
-  description: string | null;
-  path: string;
-  parentId: string | null;
-  color: string;
-  icon: string;
-  isArchived: boolean;
-  documentCount: number;
-  totalSize: number;
-  owner: FolderOwnerDto;
-  children: FolderResponseDto[];
-  createdAt: Date;
-  updatedAt: Date;
+  fileName: string;
+  fileUrl: string;
+  fileType: string;
 }
 
 export class FolderTreeNodeDto {
@@ -30,5 +14,8 @@ export class FolderTreeNodeDto {
   icon: string;
   isArchived: boolean;
   documentCount: number;
+
+  documents: DocumentTreeDto[];
+
   children: FolderTreeNodeDto[];
 }
