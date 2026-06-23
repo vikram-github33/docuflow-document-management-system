@@ -7,6 +7,8 @@ import { DocumentsModule } from './modules/documents/documents.module';
 import { FoldersModule } from './modules/folders/folders.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { StorageModule } from './modules/storage/storage.module';
+// import { AiModule } from './ai/ai.module';
+import { AIModule } from './modules/ai/ai.module';
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -27,6 +29,7 @@ import { StorageModule } from './modules/storage/storage.module';
     DocumentsModule,
     FoldersModule,
     StorageModule,
+    AIModule
   ],
   controllers: [AppController],
   providers: [AppService],

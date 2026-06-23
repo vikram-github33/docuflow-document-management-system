@@ -7,9 +7,10 @@ import { StorageModule } from '../storage/storage.module';
 import { AwsService } from '../aws/aws.service';
 import { Folder } from '../folders/folders.entity';
 import { OcrService } from '../ocr/ocr.service';
+import { AiService } from '../ai/ai.service';
 @Module({
   imports: [TypeOrmModule.forFeature([Document,Folder]),StorageModule,],
   controllers: [DocumentsController],
-  providers: [DocumentsService,AwsService,OcrService]
+  providers: [DocumentsService,AwsService,OcrService,AiService]
 })
 export class DocumentsModule {}

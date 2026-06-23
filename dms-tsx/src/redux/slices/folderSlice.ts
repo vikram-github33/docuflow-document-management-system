@@ -1,23 +1,31 @@
-import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
+import { createSlice, createAsyncThunk, type PayloadAction } from '@reduxjs/toolkit';
 import { folderService } from '../../services/folderService';
-import type { FolderTreeNode, Folder } from '../../types/folder.types';
+import type { FolderTreeNode, FolderDocument, ExplorerSelection } from '../../types/folder.types';
+import { findAncestorIds, findNodeById } from '../../utils/fileIcons';
 
-// ── State ─────────────────────────────────────────────────────────────────────
 interface FolderState {
   tree: FolderTreeNode[];
-  selectedFolder: FolderTreeNode | null;
+  selection: ExplorerSelection;
+  expandedIds: string[];
+  searchQuery: string;
   loading: boolean;
   error: string | null;
+  // Keep for backward compat with existing CreateFolderDialog allFolders prop
+  selectedFolder: FolderTreeNode | null;
 }
 
 const initialState: FolderState = {
   tree: [],
-  selectedFolder: null,
+  selection: null,
+  expandedIds: [],
+  searchQuery: '',
   loading: false,
   error: null,
+  selectedFolder: null,
 };
 
 // ── Thunks ────────────────────────────────────────────────────────────────────
+
 export const fetchFolderTree = createAsyncThunk(
   'folders/fetchTree',
   async (_, { rejectWithValue }) => {
@@ -35,7 +43,6 @@ export const createFolderThunk = createAsyncThunk(
   async (payload: Parameters<typeof folderService.createFolder>[0], { dispatch, rejectWithValue }) => {
     try {
       const result = await folderService.createFolder(payload);
-      // Refresh tree after creation
       dispatch(fetchFolderTree());
       return result;
     } catch (err: any) {
@@ -60,20 +67,73 @@ export const deleteFolderThunk = createAsyncThunk(
 );
 
 // ── Slice ─────────────────────────────────────────────────────────────────────
+
 const folderSlice = createSlice({
   name: 'folders',
   initialState,
   reducers: {
-    setSelectedFolder(state, action) {
-      state.selectedFolder = action.payload;
+    selectFolder(state, action: PayloadAction<FolderTreeNode | null>) {
+      const folder = action.payload;
+      state.selection = folder ? { type: 'folder', item: folder } : null;
+      state.selectedFolder = folder; // backward compat
+
+      // Auto-expand ancestors
+      if (folder && state.tree.length) {
+        const ancestors = findAncestorIds(state.tree, folder.id) ?? [];
+        const next = new Set([...state.expandedIds, ...ancestors]);
+        state.expandedIds = Array.from(next);
+      }
     },
+
+    selectFile(state, action: PayloadAction<{ doc: FolderDocument; folderId: string } | null>) {
+      if (!action.payload) {
+        state.selection = null;
+        return;
+      }
+      state.selection = { type: 'file', item: action.payload.doc, folderId: action.payload.folderId };
+    },
+
+    clearSelection(state) {
+      state.selection = null;
+      state.selectedFolder = null;
+    },
+
+    setExpandedIds(state, action: PayloadAction<string[]>) {
+      state.expandedIds = action.payload;
+    },
+
+    expandAll(state) {
+      const ids: string[] = [];
+      function collect(nodes: FolderTreeNode[]) {
+        for (const n of nodes) {
+          if (n.children?.length > 0) ids.push(n.id);
+          collect(n.children ?? []);
+        }
+      }
+      collect(state.tree);
+      state.expandedIds = ids;
+    },
+
+    collapseAll(state) {
+      state.expandedIds = [];
+    },
+
+    setSearchQuery(state, action: PayloadAction<string>) {
+      state.searchQuery = action.payload;
+    },
+
+    // Backward compat kept for CreateFolderDialog
+    setSelectedFolder(state, action: PayloadAction<FolderTreeNode | null>) {
+      state.selectedFolder = action.payload;
+      state.selection = action.payload ? { type: 'folder', item: action.payload } : null;
+    },
+
     clearError(state) {
       state.error = null;
     },
   },
   extraReducers: (builder) => {
     builder
-      // fetchFolderTree
       .addCase(fetchFolderTree.pending, (state) => {
         state.loading = true;
         state.error = null;
@@ -86,15 +146,25 @@ const folderSlice = createSlice({
         state.loading = false;
         state.error = action.payload as string;
       })
-      // deleteFolderThunk
       .addCase(deleteFolderThunk.fulfilled, (state, action) => {
-        // If the deleted folder was selected, clear it
         if (state.selectedFolder?.id === action.payload) {
           state.selectedFolder = null;
+          state.selection = null;
         }
       });
   },
 });
 
-export const { setSelectedFolder, clearError } = folderSlice.actions;
+export const {
+  selectFolder,
+  selectFile,
+  clearSelection,
+  setExpandedIds,
+  expandAll,
+  collapseAll,
+  setSearchQuery,
+  setSelectedFolder,
+  clearError,
+} = folderSlice.actions;
+
 export default folderSlice.reducer;

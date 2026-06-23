@@ -1,7 +1,8 @@
 import Tesseract from 'tesseract.js';
-import * as pdfParse from 'pdf-parse';
+// import * as pdfParse from 'pdf-parse';
 import { Injectable } from '@nestjs/common';
 
+const pdfParse = require('pdf-parse');
 @Injectable()
 export class OcrService {
   async extractText(file: Express.Multer.File): Promise<string> {
@@ -14,7 +15,7 @@ export class OcrService {
           return pdfData.text;
         }
       } catch (error) {
-        console.log('PDF parse failed');
+        console.log('PDF parse failed',error);
       }
     }
 

@@ -154,7 +154,6 @@ export class Document {
   })
   ocrText?: string;
 
-  
   @Column({
     name: 'ocr_status',
     length: 20,
@@ -199,6 +198,39 @@ export class Document {
     default: 0,
   })
   viewCount: number;
+
+  @Column({ type: 'text', nullable: true })
+  aiSummary?: string;
+
+  @Column('text', {
+    array: true,
+    nullable: true,
+  })
+  aiTags?: string[];
+
+  @Column({
+    nullable: true,
+  })
+  documentCategory?: string;
+
+  @Column({
+    type: 'jsonb',
+    nullable: true,
+  })
+  metadata?: any;
+
+  @Column({
+    name: 'ai_status',
+    default: 'pending',
+  })
+  aiStatus: string;
+
+  @Column({
+    name: 'ai_processed_at',
+    type: 'timestamptz',
+    nullable: true,
+  })
+  aiProcessedAt?: Date;
 
   @CreateDateColumn({
     name: 'created_at',

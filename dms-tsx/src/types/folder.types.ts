@@ -9,6 +9,9 @@ export interface FolderDocument {
   fileName: string;
   fileUrl: string;
   fileType: string;
+  fileSize?: number;
+  createdAt?: string;
+  updatedAt?: string;
 }
 
 export interface FolderTreeNode {
@@ -65,6 +68,11 @@ export interface UpdateFolderPayload {
   isArchived?: boolean;
   retentionDays?: number;
 }
+
+export type ExplorerSelection =
+  | { type: 'folder'; item: FolderTreeNode }
+  | { type: 'file'; item: FolderDocument; folderId: string }
+  | null;
 
 export const FOLDER_COLORS: { label: string; value: string }[] = [
   { label: 'Blue',   value: '#1976d2' },
