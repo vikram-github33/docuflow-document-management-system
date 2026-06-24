@@ -33,6 +33,11 @@ export const folderService = {
     return data;
   },
 
+  async aiPoweredSearch(query: string): Promise<Folder> {
+    const { data } = await api.get<Folder>(`/documents/search?query=${query}`);
+    return data;
+  },
+
   async getFolderChildren(id: string): Promise<Folder[]> {
     const { data } = await api.get<Folder[]>(`/folders/${id}/children`);
     return data;

@@ -1,7 +1,9 @@
 import {
   Body,
   Controller,
+  Get,
   Post,
+  Query,
   UploadedFile,
   UseInterceptors,
 } from '@nestjs/common';
@@ -26,7 +28,12 @@ export class DocumentsController {
     body: UploadDocumentDto,
   ) {
     console.log('BODY:', body);
-  console.log('FILE:', file);
+    console.log('FILE:', file);
     return this.documentsService.upload(file, body);
+  }
+
+  @Get('search')
+  searchDocuments(@Query('query') query: string) {
+    return this.documentsService.search(query);
   }
 }

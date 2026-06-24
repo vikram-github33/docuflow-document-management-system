@@ -33,14 +33,14 @@ export const UploadSettingsPanel: React.FC<UploadSettingsPanelProps> = ({
   const { tree, loading, error } = useAppSelector(
       (state) => state.folders
     );
-  // useEffect(() => {
-  //   setLoadingFolders(true);
+  useEffect(() => {
+    setLoadingFolders(true);
 
-  //   fetchFolders()
-  //     .then(setFolders)
-  //     .catch(console.error)
-  //     .finally(() => setLoadingFolders(false));
-  // }, []);
+    fetchFolders()
+      .then(setFolders)
+      .catch(console.error)
+      .finally(() => setLoadingFolders(false));
+  }, []);
 
   const update = (patch: Partial<UploadSettings>) => onChange({ ...settings, ...patch });
 

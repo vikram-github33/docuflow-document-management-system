@@ -47,8 +47,10 @@ export const TreeNode: React.FC<TreeNodeProps> = ({
   node, selectedFolderId, selectedFileId, expandedIds,
   searchQuery, onFolderClick, onFileClick, onContextMenu,
 }) => {
-  if (searchQuery && !nodeMatchesSearch(node, searchQuery)) return null;
-
+  console.log("node Trees renderr",node)
+  
+  // if (searchQuery && !nodeMatchesSearch(node, searchQuery)) return null;
+  
   const isSelected  = node.id === selectedFolderId;
   const isExpanded  = expandedIds.includes(node.id);
   const hasChildren = (node.children?.length ?? 0) > 0;
@@ -56,7 +58,8 @@ export const TreeNode: React.FC<TreeNodeProps> = ({
   const hasContent  = hasChildren || hasFiles;
   const color       = node.color ?? '#1976d2';
   const FolderIconComp = ICON_MAP[node.icon ?? 'folder'] ?? FolderIcon;
-
+  
+  // console.log("hasFiles",hasFiles)
   const label = (
     <Box
       sx={{
@@ -104,7 +107,9 @@ export const TreeNode: React.FC<TreeNodeProps> = ({
       )}
     </Box>
   );
-
+console.log('NODE', node);
+console.log('DOCUMENTS', node.documents);
+console.log('HAS FILES', hasFiles);
   return (
     <TreeItem
       nodeId={node.id}
@@ -138,7 +143,7 @@ export const TreeNode: React.FC<TreeNodeProps> = ({
 
       {/* Files */}
       {hasFiles && node.documents
-        .filter(d => !searchQuery || d.fileName.toLowerCase().includes(searchQuery.toLowerCase()))
+        // .filter(d => !searchQuery || d.fileName.toLowerCase().includes(searchQuery.toLowerCase()))
         .map(doc => (
           <DocumentLeaf
             key={doc.id}

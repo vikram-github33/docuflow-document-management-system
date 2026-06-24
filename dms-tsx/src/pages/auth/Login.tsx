@@ -19,6 +19,7 @@ const Login: React.FC<LoginProps> = ({ onLogin }) => {
     if (!email || !password) { setError('Please enter email and password.'); return; }
     setError('');
     setMfa(true);
+    onLogin();
   };
 
   const handleVerify = (): void => { setError(''); onLogin(); };
@@ -35,7 +36,9 @@ const Login: React.FC<LoginProps> = ({ onLogin }) => {
           <Typography sx={{ fontWeight: 700, fontSize: 20, color: 'text.primary' }}>DocuFlow</Typography>
         </Box>
 
-        {!mfa ? (
+        {
+        // !mfa ? 
+        (
           <>
             <Typography variant="h5" sx={{ fontWeight: 600, mb: 0.5, textAlign: 'center' }}>Welcome back</Typography>
             <Typography variant="body2" sx={{ color: 'text.secondary', mb: 3, textAlign: 'center' }}>Sign in to your enterprise account</Typography>
@@ -76,34 +79,36 @@ const Login: React.FC<LoginProps> = ({ onLogin }) => {
               Demo: any email + password works
             </Typography>
           </>
-        ) : (
-          <>
-            <Box sx={{ display: 'flex', justifyContent: 'center', mb: 2 }}>
-              <Box sx={{ width: 48, height: 48, bgcolor: '#EDE9FE', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                <LockOutlinedIcon sx={{ color: '#7C3AED' }} />
-              </Box>
-            </Box>
-            <Typography variant="h5" sx={{ fontWeight: 600, mb: 0.5, textAlign: 'center' }}>Verify identity</Typography>
-            <Typography variant="body2" sx={{ color: 'text.secondary', mb: 3, textAlign: 'center' }}>
-              Enter the 6-digit code from your authenticator app
-            </Typography>
+        ) 
+        // : (
+        //   <>
+        //     <Box sx={{ display: 'flex', justifyContent: 'center', mb: 2 }}>
+        //       <Box sx={{ width: 48, height: 48, bgcolor: '#EDE9FE', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+        //         <LockOutlinedIcon sx={{ color: '#7C3AED' }} />
+        //       </Box>
+        //     </Box>
+        //     <Typography variant="h5" sx={{ fontWeight: 600, mb: 0.5, textAlign: 'center' }}>Verify identity</Typography>
+        //     <Typography variant="body2" sx={{ color: 'text.secondary', mb: 3, textAlign: 'center' }}>
+        //       Enter the 6-digit code from your authenticator app
+        //     </Typography>
 
-            <TextField
-              label="6-digit code" fullWidth size="small"
-              value={code} onChange={(e) => setCode(e.target.value)}
-              inputProps={{ maxLength: 6, style: { textAlign: 'center', fontSize: 22, letterSpacing: 12 } }}
-              placeholder="000000" sx={{ mb: 2 }}
-            />
+        //     <TextField
+        //       label="6-digit code" fullWidth size="small"
+        //       value={code} onChange={(e) => setCode(e.target.value)}
+        //       inputProps={{ maxLength: 6, style: { textAlign: 'center', fontSize: 22, letterSpacing: 12 } }}
+        //       placeholder="000000" sx={{ mb: 2 }}
+        //     />
 
-            <Button variant="contained" fullWidth onClick={handleVerify} sx={{ mb: 1.5, py: 1, fontWeight: 600 }}>
-              Verify & Sign in
-            </Button>
-            <Typography variant="caption" sx={{ display: 'block', textAlign: 'center', color: 'text.secondary' }}>
-              Didn't get a code?{' '}
-              <Box component="span" sx={{ color: 'primary.main', cursor: 'pointer' }}>Resend</Box>
-            </Typography>
-          </>
-        )}
+        //     <Button variant="contained" fullWidth onClick={handleVerify} sx={{ mb: 1.5, py: 1, fontWeight: 600 }}>
+        //       Verify & Sign in
+        //     </Button>
+        //     <Typography variant="caption" sx={{ display: 'block', textAlign: 'center', color: 'text.secondary' }}>
+        //       Didn't get a code?{' '}
+        //       <Box component="span" sx={{ color: 'primary.main', cursor: 'pointer' }}>Resend</Box>
+        //     </Typography>
+        //   </>
+        // )
+        }
       </Paper>
     </Box>
   );

@@ -17,7 +17,7 @@ export class DocumentsService {
     private readonly aiService: AiService,
   ) {}
   async upload(file: Express.Multer.File, body: UploadDocumentDto) {
-     const fileKey = `documents/${Date.now()}-${file.originalname}`;
+    const fileKey = `documents/${Date.now()}-${file.originalname}`;
     const uploadResult = await this.awsService.uploadFile(file, fileKey);
 
     const document = await this.documentRepository.save({
@@ -25,41 +25,41 @@ export class DocumentsService {
       fileUrl: uploadResult,
       fileType: file.mimetype,
       folderId: body.folderId,
-
-      ocrStatus: 'pending',
-      aiStatus: 'pending',
+      ocrStatus: 'processing',
+      aiStatus: 'processing',
 
       ownerId: '6e498a66-b48d-4dea-acb1-dda2104b6606',
     });
 
     // background processing
-    this.processDocument(document.id, file);
-
+    setImmediate(() => {
+      this.processDocument(document.id, file);
+    });
+    console.log(`Processing document ${document?.id}`);
     return document;
   }
 
-  private parseAiTags(
-  response: string,
-): string[] {
-  try {
-    const match =
-      response.match(
-        /\[[\s\S]*\]/,
-      );
+  private parseAiTags(response: string): string[] {
+    try {
+      const match = response.match(/\[[\s\S]*\]/);
 
-    if (!match) {
+      if (!match) {
+        return [];
+      }
+
+      return JSON.parse(match[0]);
+    } catch {
       return [];
     }
-
-    return JSON.parse(match[0]);
-  } catch {
-    return [];
   }
-}
   async processDocument(documentId: string, file: Express.Multer.File) {
-    const document:any = await this.documentRepository.findOneBy({
+    const document = await this.documentRepository.findOneBy({
       id: documentId,
     });
+
+    if (!document) {
+      throw new Error('Document not found');
+    }
 
     try {
       const ocrText = await this.ocrService.extractText(file);
@@ -68,12 +68,12 @@ export class DocumentsService {
       document.ocrStatus = 'completed';
 
       await this.documentRepository.save(document);
-
-      const summary = await this.aiService.summarize(ocrText);
-
-      const tags = await this.aiService.generateTags(ocrText);
-
-      const category = await this.aiService.classify(ocrText);
+      console.log(`OCR completed for ${documentId}`);
+      const [summary, tags, category] = await Promise.all([
+        this.aiService.summarize(ocrText),
+        this.aiService.generateTags(ocrText),
+        this.aiService.classify(ocrText),
+      ]);
 
       document.aiSummary = summary;
 
@@ -86,10 +86,65 @@ export class DocumentsService {
       document.aiProcessedAt = new Date();
 
       await this.documentRepository.save(document);
+      console.log(`AI completed for ${documentId}`);
     } catch (error) {
       document.aiStatus = 'failed';
-
       await this.documentRepository.save(document);
+      throw error;
     }
+  }
+
+  async search(query: string) {
+    const documents = await this.documentRepository
+      .createQueryBuilder('document')
+      .leftJoinAndSelect('document.folder', 'folder')
+      .where(
+        `
+      LOWER(document.fileName) LIKE LOWER(:query)
+      OR LOWER(document.ocrText) LIKE LOWER(:query)
+      OR LOWER(document.aiSummary) LIKE LOWER(:query)
+      `,
+        {
+          query: `%${query}%`,
+        },
+      )
+      .getMany();
+
+    const foldersMap = new Map();
+
+    for (const doc of documents) {
+      // file in root
+      if (!doc.folder) {
+        continue;
+      }
+
+      const folderId = doc.folder.id;
+
+      if (!foldersMap.has(folderId)) {
+        foldersMap.set(folderId, {
+          id: doc.folder.id,
+          name: doc.folder.name,
+          path: doc.folder.path,
+          parentId: doc.folder.parentId,
+          color: doc.folder.color,
+          icon: doc.folder.icon,
+          isArchived: doc.folder.isArchived,
+          documentCount: 0,
+
+          documents: [],
+
+          children: [],
+        });
+      }
+
+      foldersMap.get(folderId).documents.push({
+        id: doc.id,
+        fileName: doc.fileName,
+        fileUrl: doc.fileUrl,
+        fileType: doc.fileType,
+      });
+    }
+
+    return Array.from(foldersMap.values());
   }
 }

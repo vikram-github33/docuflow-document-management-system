@@ -32,7 +32,7 @@ export function useUploadQueue(): UseUploadQueueResult {
       return next;
     });
   }, []);
-
+  console.log("files",files)
   const updateFile = useCallback((id: string, patch: Partial<UploadFile>) => {
     setFilesSync((prev) => prev.map((f) => (f.id === id ? { ...f, ...patch } : f)));
   }, [setFilesSync]);

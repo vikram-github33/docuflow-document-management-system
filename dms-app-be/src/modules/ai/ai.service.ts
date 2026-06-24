@@ -1,73 +1,36 @@
-import OpenAI from 'openai';
-import { Injectable } from '@nestjs/common';
-import axios from 'axios';
-import pdfParse from 'pdf-parse';
+import { IAiProvider } from "src/interfaces/ai-provider.interface";
+import { OllamaProvider } from "./ollama.provider.";
+import { GeminiProvider } from "./gemini.provider";
+import { Injectable } from "@nestjs/common";
+
 @Injectable()
 export class AiService {
-  //   private openai = new OpenAI({
-  //     apiKey: process.env.OPENAI_API_KEY,
-  //   });
 
-  //   async generateEmbedding(text: string) {
-  //     const response =
-  //       await this.openai.embeddings.create({
-  //         model: 'text-embedding-3-small',
-  //         input: text,
-  //       });
+  private provider: IAiProvider;
 
-  //     return response.data[0].embedding;
-  //   }
+  constructor(
+    private readonly ollamaProvider:
+      OllamaProvider,
 
-  async ask(prompt: string) {
-    const response = await axios.post('http://localhost:11434/api/generate', {
-      model: 'llama3',
-      prompt,
-      stream: false,
-    });
+    private readonly geminiProvider:
+      GeminiProvider,
+  ) {
 
-    return response.data.response;
+    this.provider =
+      process.env.AI_PROVIDER === 'ollama'
+        ? this.ollamaProvider
+        : this.geminiProvider;
   }
 
-  async extractPdfText(buffer: Buffer) {
-    const pdfData = await pdfParse(buffer);
-
-    return pdfData.text;
+  summarize(text: string) {
+    return this.provider.summarize(text);
   }
 
-  async summarize(text: string) {
-    return this.ask(`
-Summarize the following document.
-
-${text}
-`);
+  generateTags(text: string) {
+    return this.provider.generateTags(text);
   }
 
-  async generateTags(text: string) {
-    return this.ask(`
-Extract 5 tags.
-
-Return JSON array only.
-
-${text}
-`);
-  }
-
-  async classify(text: string) {
-    return this.ask(`
-Classify document.
-
-Possible categories:
-
-Invoice
-Contract
-HR
-Legal
-Resume
-Policy
-
-Return only category.
-
-${text}
-`);
+  classify(text: string) {
+    return this.provider.classify(text);
   }
 }

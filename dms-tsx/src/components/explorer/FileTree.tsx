@@ -8,16 +8,16 @@ import RefreshIcon from '@mui/icons-material/Refresh';
 import { TreeNode } from './TreeNode';
 import { useAppDispatch, useAppSelector } from '../../redux/hooks';
 import { selectFolder, selectFile, setExpandedIds, fetchFolderTree } from '../../redux/slices/folderSlice';
-import type { FolderTreeNode, FolderDocument } from '../../types/folder.types';
+import type { FolderTreeNode, FolderDocument, Folder } from '../../types/folder.types';
 
 interface FileTreeProps {
   onContextMenu: (e: React.MouseEvent, type: 'folder' | 'file', id: string, node: FolderTreeNode) => void;
+  data: FolderTreeNode[] | Folder[];
 }
 
-export const FileTree: React.FC<FileTreeProps> = ({ onContextMenu }) => {
+export const FileTree: React.FC<FileTreeProps> = ({ onContextMenu,data }) => {
   const dispatch  = useAppDispatch();
-  const { tree, loading, error, expandedIds, selection, searchQuery } = useAppSelector(s => s.folders);
-
+  const {loading, error, expandedIds, selection, searchQuery} = useAppSelector(s => s.folders);
   const selectedFolderId = selection?.type === 'folder' ? selection.item.id : null;
   const selectedFileId   = selection?.type === 'file'   ? selection.item.id : null;
 
@@ -62,7 +62,7 @@ export const FileTree: React.FC<FileTreeProps> = ({ onContextMenu }) => {
   }
 
   // ── Empty ──────────────────────────────────────────────────────────────────
-  if (!tree || tree.length === 0) {
+  if (!data || data.length === 0) {
     return (
       <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 1, p: 4 }}>
         <FolderIcon sx={{ fontSize: 40, opacity: 0.2, color: 'text.secondary' }} />
@@ -73,7 +73,7 @@ export const FileTree: React.FC<FileTreeProps> = ({ onContextMenu }) => {
       </Box>
     );
   }
-
+// console.log("data",data)
   return (
     <TreeView
       defaultCollapseIcon={<ExpandMoreIcon sx={{ fontSize: 16 }} />}
@@ -90,7 +90,9 @@ export const FileTree: React.FC<FileTreeProps> = ({ onContextMenu }) => {
         '& .MuiTreeItem-root': { my: 0.1 },
       }}
     >
-      {tree.map(node => (
+      {data.map((node:any) => {
+        console.log("node",node)
+        return(
         <TreeNode
           key={node.id}
           node={node}
@@ -102,7 +104,17 @@ export const FileTree: React.FC<FileTreeProps> = ({ onContextMenu }) => {
           onFileClick={handleFileClick}
           onContextMenu={onContextMenu}
         />
-      ))}
+      )})}
+      {/* {data.map((node:any) => (
+  <div key={node.id}>
+    <h4>{node.name}</h4>
+
+    {node.documents?.map((doc:any) => (
+      <div key={doc.id}>
+        📄 {doc.fileName}
+      </div>
+    ))}
+  </div>))} */}
     </TreeView>
   );
 };

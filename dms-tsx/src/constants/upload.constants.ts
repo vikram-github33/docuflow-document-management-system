@@ -62,5 +62,5 @@ export const TOAST_DURATION_MS = 4000;
 export const API_ENDPOINTS = {
   INITIATE_UPLOAD: '/documents/upload',
   CONFIRM_UPLOAD: '/api/uploads/confirm',
-  FOLDERS: '/api/folders',
+  FOLDERS: '/folders',
 } as const;

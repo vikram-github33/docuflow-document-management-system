@@ -1,7 +1,16 @@
-import { createSlice, createAsyncThunk, type PayloadAction } from '@reduxjs/toolkit';
-import { folderService } from '../../services/folderService';
-import type { FolderTreeNode, FolderDocument, ExplorerSelection } from '../../types/folder.types';
-import { findAncestorIds, findNodeById } from '../../utils/fileIcons';
+import {
+  createSlice,
+  createAsyncThunk,
+  type PayloadAction,
+} from "@reduxjs/toolkit";
+import { folderService } from "../../services/folderService";
+import type {
+  FolderTreeNode,
+  FolderDocument,
+  ExplorerSelection,
+  Folder,
+} from "../../types/folder.types";
+import { findAncestorIds, findNodeById } from "../../utils/fileIcons";
 
 interface FolderState {
   tree: FolderTreeNode[];
@@ -12,69 +21,86 @@ interface FolderState {
   error: string | null;
   // Keep for backward compat with existing CreateFolderDialog allFolders prop
   selectedFolder: FolderTreeNode | null;
+  searchResults: any[];
 }
 
 const initialState: FolderState = {
   tree: [],
   selection: null,
   expandedIds: [],
-  searchQuery: '',
+  searchQuery: "",
   loading: false,
   error: null,
   selectedFolder: null,
+  searchResults: [],
 };
 
 // ── Thunks ────────────────────────────────────────────────────────────────────
 
 export const fetchFolderTree = createAsyncThunk(
-  'folders/fetchTree',
+  "folders/fetchTree",
   async (_, { rejectWithValue }) => {
     try {
       return await folderService.getFolderTree();
     } catch (err: any) {
-      const msg = err?.response?.data?.message ?? 'Failed to load folders';
-      return rejectWithValue(Array.isArray(msg) ? msg.join(', ') : msg);
+      const msg = err?.response?.data?.message ?? "Failed to load folders";
+      return rejectWithValue(Array.isArray(msg) ? msg.join(", ") : msg);
     }
-  }
+  },
+);
+
+export const getAiPoweredSearch = createAsyncThunk(
+  "folders/search",
+  async (query: string, { rejectWithValue }) => {
+    try {
+      return await folderService.aiPoweredSearch(query);
+    } catch (err: any) {
+      const msg = err?.response?.data?.message ?? "Failed to load folders";
+      return rejectWithValue(Array.isArray(msg) ? msg.join(", ") : msg);
+    }
+  },
 );
 
 export const createFolderThunk = createAsyncThunk(
-  'folders/create',
-  async (payload: Parameters<typeof folderService.createFolder>[0], { dispatch, rejectWithValue }) => {
+  "folders/create",
+  async (
+    payload: Parameters<typeof folderService.createFolder>[0],
+    { dispatch, rejectWithValue },
+  ) => {
     try {
       const result = await folderService.createFolder(payload);
       dispatch(fetchFolderTree());
       return result;
     } catch (err: any) {
-      const msg = err?.response?.data?.message ?? 'Failed to create folder';
-      return rejectWithValue(Array.isArray(msg) ? msg.join(', ') : msg);
+      const msg = err?.response?.data?.message ?? "Failed to create folder";
+      return rejectWithValue(Array.isArray(msg) ? msg.join(", ") : msg);
     }
-  }
+  },
 );
 
 export const deleteFolderThunk = createAsyncThunk(
-  'folders/delete',
+  "folders/delete",
   async (id: string, { dispatch, rejectWithValue }) => {
     try {
       await folderService.deleteFolder(id);
       dispatch(fetchFolderTree());
       return id;
     } catch (err: any) {
-      const msg = err?.response?.data?.message ?? 'Failed to delete folder';
-      return rejectWithValue(Array.isArray(msg) ? msg.join(', ') : msg);
+      const msg = err?.response?.data?.message ?? "Failed to delete folder";
+      return rejectWithValue(Array.isArray(msg) ? msg.join(", ") : msg);
     }
-  }
+  },
 );
 
 // ── Slice ─────────────────────────────────────────────────────────────────────
 
 const folderSlice = createSlice({
-  name: 'folders',
+  name: "folders",
   initialState,
   reducers: {
     selectFolder(state, action: PayloadAction<FolderTreeNode | null>) {
       const folder = action.payload;
-      state.selection = folder ? { type: 'folder', item: folder } : null;
+      state.selection = folder ? { type: "folder", item: folder } : null;
       state.selectedFolder = folder; // backward compat
 
       // Auto-expand ancestors
@@ -85,12 +111,19 @@ const folderSlice = createSlice({
       }
     },
 
-    selectFile(state, action: PayloadAction<{ doc: FolderDocument; folderId: string } | null>) {
+    selectFile(
+      state,
+      action: PayloadAction<{ doc: FolderDocument; folderId: string } | null>,
+    ) {
       if (!action.payload) {
         state.selection = null;
         return;
       }
-      state.selection = { type: 'file', item: action.payload.doc, folderId: action.payload.folderId };
+      state.selection = {
+        type: "file",
+        item: action.payload.doc,
+        folderId: action.payload.folderId,
+      };
     },
 
     clearSelection(state) {
@@ -125,7 +158,9 @@ const folderSlice = createSlice({
     // Backward compat kept for CreateFolderDialog
     setSelectedFolder(state, action: PayloadAction<FolderTreeNode | null>) {
       state.selectedFolder = action.payload;
-      state.selection = action.payload ? { type: 'folder', item: action.payload } : null;
+      state.selection = action.payload
+        ? { type: "folder", item: action.payload }
+        : null;
     },
 
     clearError(state) {
@@ -151,6 +186,22 @@ const folderSlice = createSlice({
           state.selectedFolder = null;
           state.selection = null;
         }
+      })
+      .addCase(getAiPoweredSearch.pending, (state) => {
+        state.loading = true;
+      })
+
+      .addCase(getAiPoweredSearch.fulfilled, (state, action) => {
+        state.loading = false;
+
+        state.searchResults = Array.isArray(action.payload)
+          ? action.payload
+          : [action.payload];
+      })
+
+      .addCase(getAiPoweredSearch.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload as string;
       });
   },
 });
