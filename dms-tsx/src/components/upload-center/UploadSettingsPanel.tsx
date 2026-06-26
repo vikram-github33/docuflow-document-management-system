@@ -13,6 +13,7 @@ import UploadIcon from '@mui/icons-material/Upload';
 import { fetchFolders } from '../../services/upload.service';
 import type { FolderOption, UploadSettings } from '../../types/upload.types';
 import { useAppDispatch, useAppSelector } from '../../redux/hooks';
+import { fetchFolderTree } from '../../redux/slices/folderSlice';
 interface UploadSettingsPanelProps {
   settings: UploadSettings;
   onChange: (updated: UploadSettings) => void;
@@ -30,6 +31,7 @@ export const UploadSettingsPanel: React.FC<UploadSettingsPanelProps> = ({
 }) => {
   const [folders, setFolders] = useState<FolderOption[]>([]);
   const [loadingFolders, setLoadingFolders] = useState(false);
+  const dispatch = useAppDispatch();
   const { tree, loading, error } = useAppSelector(
       (state) => state.folders
     );
@@ -41,9 +43,11 @@ export const UploadSettingsPanel: React.FC<UploadSettingsPanelProps> = ({
       .catch(console.error)
       .finally(() => setLoadingFolders(false));
   }, []);
-
+ useEffect(() => {
+    dispatch(fetchFolderTree());
+  }, [dispatch]);
   const update = (patch: Partial<UploadSettings>) => onChange({ ...settings, ...patch });
-
+  console.log("update",update)
   return (
     <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
       <Typography variant="body2" fontWeight={500} sx={{ display: 'flex', alignItems: 'center', gap: 0.75 }}>

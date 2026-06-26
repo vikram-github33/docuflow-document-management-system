@@ -1,7 +1,9 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
+  Param,
   Post,
   Query,
   UploadedFile,
@@ -35,5 +37,10 @@ export class DocumentsController {
   @Get('search')
   searchDocuments(@Query('query') query: string) {
     return this.documentsService.search(query);
+  }
+
+  @Delete('/movetotrash/:id')
+  moveToTrash(@Param('id') id: string) {
+    return this.documentsService.moveToTrash(id);
   }
 }

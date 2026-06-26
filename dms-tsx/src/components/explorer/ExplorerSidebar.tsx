@@ -35,7 +35,7 @@ export const ExplorerSidebar: React.FC<ExplorerSidebarProps> = ({
 }) => {
   const dispatch = useAppDispatch();
   const { searchQuery, tree, searchResults } = useAppSelector((s) => s.folders);
-  console.log("searchResults", searchResults);
+  // console.log("searchResults", searchResults);
   const totalFolders = (function count(nodes: FolderTreeNode[]): number {
     return nodes.reduce((acc, n) => acc + 1 + count(n.children ?? []), 0);
   })(tree);

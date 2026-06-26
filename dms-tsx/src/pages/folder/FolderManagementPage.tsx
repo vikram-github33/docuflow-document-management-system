@@ -9,6 +9,7 @@ import { CreateFolderDialog } from '../../components/folders/CreateFolderDialog'
 import { useAppDispatch, useAppSelector } from '../../redux/hooks';
 import { fetchFolderTree, selectFolder } from '../../redux/slices/folderSlice';
 import type { FolderTreeNode } from '../../types/folder.types';
+import { findNodeById } from 'utils/fileIcons';
 
 export const FolderManagementPage: React.FC = () => {
   const dispatch = useAppDispatch();
@@ -38,8 +39,12 @@ export const FolderManagementPage: React.FC = () => {
   };
 
   // The parent folder for CreateFolderDialog
-  const parentFolder = selection?.type === 'folder' ? selection.item : null;
-
+  // const parentFolder = selection?.type === 'folder' ? selection.item : null;
+  const parentFolder =
+  selection?.type === 'folder'
+    ? findNodeById(tree, selection.item.id)
+    : null;
+  // console.log("tree",tree)
   return (
     <Box
       sx={{ display: 'flex', flexDirection: 'column', height: '100vh', bgcolor: 'grey.50' }}

@@ -91,7 +91,7 @@ export const FileTree: React.FC<FileTreeProps> = ({ onContextMenu,data }) => {
       }}
     >
       {data.map((node:any) => {
-        console.log("node",node)
+        // console.log("node",node)
         return(
         <TreeNode
           key={node.id}

@@ -14,6 +14,7 @@ import Search            from './pages/Search';
 import FolderCreation from 'pages/FolderCreation';
 import FolderExplorerPage from 'pages/folders/FolderExplorerPage';
 import { FolderManagementPage } from 'pages/folder/FolderManagementPage';
+import ComingSoon from 'ComingSoon';
 
 
 const App: React.FC = () => {
@@ -27,7 +28,7 @@ const App: React.FC = () => {
     <AppShell>
       <Routes>
         <Route path="/"           element={<Navigate to="/dashboard" replace />} />
-        <Route path="/dashboard"  element={<Dashboard />} />
+        <Route path="/dashboard"  element={<ComingSoon />} />
         <Route path="/folder"  element={<FolderManagementPage/>} />
         <Route path="/documents"  element={<DocumentExplorer />} />
         <Route path="/upload"     element={<UploadCenterPage />} />

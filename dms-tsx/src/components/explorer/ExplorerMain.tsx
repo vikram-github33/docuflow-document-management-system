@@ -4,9 +4,10 @@ import FolderOpenIcon from '@mui/icons-material/FolderOpen';
 import { FolderView } from './FolderView';
 import { FilePreview } from './FilePreview';
 import { useAppSelector } from '../../redux/hooks';
+import { findNodeById } from 'utils/fileIcons';
 
 export const ExplorerMain: React.FC = () => {
-  const { selection } = useAppSelector(s => s.folders);
+  const { tree,selection } = useAppSelector(s => s.folders);
 
   if (!selection) {
     return (
@@ -26,9 +27,20 @@ export const ExplorerMain: React.FC = () => {
     );
   }
 
-  if (selection.type === 'folder') {
-    return <FolderView folder={selection.item} />;
+   if (selection.type === 'folder') {
+    const currentFolder = findNodeById(tree, selection.item.id);
+      console.log("FolderView",currentFolder)
+    if (!currentFolder) {
+      return null;
+    }
+
+    return <FolderView folder={currentFolder} />;
   }
 
-  return <FilePreview doc={selection.item} folderId={(selection as any).folderId} />;
+  return (
+    <FilePreview
+      doc={selection.item}
+      folderId={(selection as any).folderId}
+    />
+  );
 };

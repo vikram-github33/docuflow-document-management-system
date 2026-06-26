@@ -162,7 +162,11 @@ export class FoldersService {
     order: { name: 'ASC' },
   });
 
-  const documents = await this.documentRepository.find();
+  const documents = await this.documentRepository.find({
+    where:{
+      deletedAt:IsNull()
+    }
+  });
 
   const map = new Map<string, FolderTreeNodeDto>();
 

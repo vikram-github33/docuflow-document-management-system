@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { UploadDocumentDto } from './upload-document.dto';
@@ -146,5 +146,23 @@ export class DocumentsService {
     }
 
     return Array.from(foldersMap.values());
+  }
+
+  async moveToTrash(id: string) {
+    const document = await this.documentRepository.findOne({
+      where: { id },
+    });
+
+    if (!document) {
+      throw new NotFoundException();
+    }
+
+    document.deletedAt = new Date();
+
+    await this.documentRepository.save(document);
+
+    return {
+      message: 'Moved to trash',
+    };
   }
 }

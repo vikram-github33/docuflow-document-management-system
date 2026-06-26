@@ -105,7 +105,7 @@ export const FilePreview: React.FC<FilePreviewProps> = ({ doc }) => {
   const cfg   = getFileIconConfig(doc.fileType);
   const isPdf = doc.fileType === 'application/pdf';
   const isImg = doc.fileType.startsWith('image/');
-
+  console.log("doc=====",doc)
   return (
     <Box sx={{ height: '100%', display: 'flex', flexDirection: 'column', p: 2, gap: 1.5 }}>
       {/* Header */}
@@ -157,8 +157,8 @@ export const FilePreview: React.FC<FilePreviewProps> = ({ doc }) => {
           {[
             { label: 'File type', value: doc.fileType },
             { label: 'Size', value: doc.fileSize ? formatFileSize(doc.fileSize) : '—' },
-            { label: 'Uploaded', value: doc.createdAt ? timeAgo(doc.createdAt) : '—' },
-            { label: 'Modified', value: doc.updatedAt ? timeAgo(doc.updatedAt) : '—' },
+            // { label: 'Uploaded', value: doc.createdAt ? timeAgo(doc.createdAt) : '—' },
+            // { label: 'Modified', value: doc.updatedAt ? timeAgo(doc.updatedAt) : '—' },
           ].map(({ label, value }) => (
             <Box key={label}>
               <Typography variant="caption" color="text.secondary" sx={{ fontSize: 10 }}>{label}</Typography>

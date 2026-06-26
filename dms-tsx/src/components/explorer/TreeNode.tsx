@@ -47,7 +47,7 @@ export const TreeNode: React.FC<TreeNodeProps> = ({
   node, selectedFolderId, selectedFileId, expandedIds,
   searchQuery, onFolderClick, onFileClick, onContextMenu,
 }) => {
-  console.log("node Trees renderr",node)
+  // console.log("node Trees renderr",node)
   
   // if (searchQuery && !nodeMatchesSearch(node, searchQuery)) return null;
   
@@ -107,9 +107,9 @@ export const TreeNode: React.FC<TreeNodeProps> = ({
       )}
     </Box>
   );
-console.log('NODE', node);
-console.log('DOCUMENTS', node.documents);
-console.log('HAS FILES', hasFiles);
+// console.log('NODE', node);
+// console.log('DOCUMENTS', node.documents);
+// console.log('HAS FILES', hasFiles);
   return (
     <TreeItem
       nodeId={node.id}
