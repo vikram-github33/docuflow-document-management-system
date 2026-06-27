@@ -11,6 +11,7 @@ import { StorageModule } from './modules/storage/storage.module';
 import { AIModule } from './modules/ai/ai.module';
 import { FavoritesModule } from './modules/favorites/favorites.module';
 import { ScheduleModule } from '@nestjs/schedule';
+import { AuthModule } from './modules/auth/auth.module';
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -33,7 +34,8 @@ import { ScheduleModule } from '@nestjs/schedule';
     FoldersModule,
     StorageModule,
     AIModule,
-    FavoritesModule
+    FavoritesModule,
+    AuthModule
   ],
   controllers: [AppController],
   providers: [AppService],

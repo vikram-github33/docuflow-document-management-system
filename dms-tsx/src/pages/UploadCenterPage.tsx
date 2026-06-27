@@ -57,6 +57,7 @@ export const UploadCenterPage: React.FC = () => {
   const handleStartUpload = useCallback(() => {
     const pendingCount = files.filter((f) => f.status === 'pending').length;
     if (!pendingCount) return;
+    console.log("files",files)
     startPending();
     pushToast(`Starting upload for ${pendingCount} file(s)...`, 'info');
   }, [files, startPending, pushToast]);

@@ -12,6 +12,7 @@ export interface FavouriteDocument {
   createdAt?: string;
   updatedAt?: string;
   markedFavouriteAt?: string;
+  document:any
 }
 
 export interface ToggleFavoriteDoc{

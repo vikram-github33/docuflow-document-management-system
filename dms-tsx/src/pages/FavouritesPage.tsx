@@ -180,7 +180,7 @@ function GridCard({ name, meta, fileType, isFolder, color, onOpen, onRemoveFav }
 // ─── Main Page ────────────────────────────────────────────────────────────────
 const FavouritesPage: React.FC = () => {
   const [documents,     setDocuments]     = useState<FavouriteDocument[]>([]);
-  const [folders,       setFolders]       = useState<FavouriteFolder[]>([]);
+  const [folders,       setFolders]       = useState<any[]>([]);
   const [loading,       setLoading]       = useState(false);
   const [error,         setError]         = useState<string | null>(null);
   const [search,        setSearch]        = useState('');
@@ -211,16 +211,17 @@ const FavouritesPage: React.FC = () => {
 
   // ── Filtered + sorted ──────────────────────────────────────────────────────
   const q = search.toLowerCase();
-
+// console.log("q",q)
   const filteredDocs = useMemo(() => {
+    // console.log("folders",folders)
     const list = documents.filter(d =>
-      d.fileName.toLowerCase().includes(q) ||
-      d.folderName?.toLowerCase().includes(q)
+      d?.document?.fileName?.toLowerCase().includes(q) ||
+      d?.folderName?.toLowerCase().includes(q)
     );
     return [...list].sort((a, b) => {
       let cmp = 0;
-      if (sortField === 'name')     cmp = a.fileName.localeCompare(b.fileName);
-      if (sortField === 'type')     cmp = a.fileType.localeCompare(b.fileType);
+      if (sortField === 'name')     cmp = a?.fileName?.localeCompare(b.fileName);
+      if (sortField === 'type')     cmp = a?.fileType?.localeCompare(b.fileType);
       if (sortField === 'size')     cmp = (a.fileSize ?? 0) - (b.fileSize ?? 0);
       if (sortField === 'modified') cmp = (a.updatedAt ?? '').localeCompare(b.updatedAt ?? '');
       return sortDir === 'asc' ? cmp : -cmp;
@@ -229,13 +230,13 @@ const FavouritesPage: React.FC = () => {
 
   const filteredFolders = useMemo(() =>
     folders.filter(f =>
-      f.name.toLowerCase().includes(q) ||
-      f.path.toLowerCase().includes(q)
+      f?.folder.name?.toLowerCase().includes(q) ||
+      f?.path?.toLowerCase().includes(q)
     ), [folders, q]);
 
   const totalCount    = documents.length + folders.length;
   const filteredCount = filteredDocs.length + filteredFolders.length;
-
+    console.log("filteredDocs",filteredDocs)
   // ── Sort toggle ────────────────────────────────────────────────────────────
   const handleSort = (field: SortField) => {
     if (sortField === field) setSortDir(d => d === 'asc' ? 'desc' : 'asc');
@@ -444,13 +445,14 @@ const FavouritesPage: React.FC = () => {
                     Modified
                   </TableSortLabel>
                 </TableCell>
-                <TableCell sx={{ width: 80 }} />
+                {/* <TableCell sx={{ width: 80 }} /> */}
               </TableRow>
             </TableHead>
 
             <TableBody>
               {/* Folder rows */}
               {filteredFolders.map(f => {
+                // console.log("f",f)
                 const folderColor = f.color ?? '#1976d2';
                 return (
                   <TableRow
@@ -464,7 +466,7 @@ const FavouritesPage: React.FC = () => {
                         <FolderIcon sx={{ fontSize: 20, color: folderColor, flexShrink: 0 }} />
                         <Box sx={{ minWidth: 0 }}>
                           <Typography variant="body2" noWrap fontWeight={500} sx={{ fontSize: 13 }}>
-                            {truncate(f.name)}
+                            {truncate(f.folder.name)}
                           </Typography>
                           <Typography variant="caption" color="text.secondary" noWrap sx={{ fontSize: 11, fontFamily: 'monospace' }}>
                             {f.path}
@@ -490,7 +492,7 @@ const FavouritesPage: React.FC = () => {
                       </Typography>
                     </TableCell>
                     {/* Actions */}
-                    <TableCell>
+                    {/* <TableCell>
                       <Box sx={{ display: 'flex', gap: 0.5, justifyContent: 'flex-end' }}>
                         <Tooltip title="Remove from favourites">
                           <IconButton size="small" onClick={() => removeFolder(f.id)} sx={{ p: 0.5 }}>
@@ -502,7 +504,7 @@ const FavouritesPage: React.FC = () => {
                           <MoreVertIcon sx={{ fontSize: 16 }} />
                         </IconButton>
                       </Box>
-                    </TableCell>
+                    </TableCell> */}
                   </TableRow>
                 );
               })}
@@ -523,8 +525,8 @@ const FavouritesPage: React.FC = () => {
                         <FileTypeIcon fileType={d.fileType} color={cfg.color} size={20} />
                         <Box sx={{ minWidth: 0 }}>
                           <Typography variant="body2" noWrap fontWeight={500} sx={{ fontSize: 13 }}
-                            title={d.fileName}>
-                            {truncate(d.fileName)}
+                            title={d.document.fileName}>
+                            {truncate(d.document.fileName)}
                           </Typography>
                           {d.folderName && (
                             <Typography variant="caption" color="text.secondary" noWrap sx={{ fontSize: 11 }}>
@@ -552,7 +554,7 @@ const FavouritesPage: React.FC = () => {
                       </Typography>
                     </TableCell>
                     {/* Actions */}
-                    <TableCell onClick={e => e.stopPropagation()}>
+                    {/* <TableCell onClick={e => e.stopPropagation()}>
                       <Box sx={{ display: 'flex', gap: 0.5, justifyContent: 'flex-end' }}>
                         <Tooltip title="Remove from favourites">
                           <IconButton size="small" onClick={() => removeDoc(d.id)} sx={{ p: 0.5 }}>
@@ -564,7 +566,7 @@ const FavouritesPage: React.FC = () => {
                           <MoreVertIcon sx={{ fontSize: 16 }} />
                         </IconButton>
                       </Box>
-                    </TableCell>
+                    </TableCell> */}
                   </TableRow>
                 );
               })}

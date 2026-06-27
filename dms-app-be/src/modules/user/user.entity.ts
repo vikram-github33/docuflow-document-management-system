@@ -10,6 +10,7 @@ import {
 import { Folder } from '../folders/folders.entity';
 import { Document } from '../documents/documents.entity';
 import { Favorite } from 'src/modules/favorites/favourites.entity';
+import { RefreshToken } from '../auth/refresh-token/refresh-token.entity';
 export enum UserRole {
   ADMIN = 'ADMIN',
   MANAGER = 'MANAGER',
@@ -106,6 +107,11 @@ export class User {
 
   @OneToMany(() => Document, (document) => document.owner)
   documents: Document[];
+
+  @OneToMany(() => RefreshToken, (refreshToken) => refreshToken.user, {
+    cascade: true,
+  })
+  refreshTokens: RefreshToken[];
 
   @CreateDateColumn({
     name: 'created_at',

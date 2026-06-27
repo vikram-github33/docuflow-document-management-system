@@ -15,7 +15,7 @@ api.interceptors.request.use((config) => {
 export const favouritesService = {
   /** GET /favourites/documents */
   async getFavouriteDocuments(): Promise<FavouriteDocument[]> {
-    const { data } = await api.get<FavouriteDocument[]>('/favourites/documents');
+    const { data } = await api.get<FavouriteDocument[]>('/favourites');
     return data;
   },
 

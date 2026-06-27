@@ -95,6 +95,7 @@ export function useUploadQueue(): UseUploadQueueResult {
 
   const addFiles = useCallback((newFiles: File[], settings: UploadSettings) => {
     const valid: UploadFile[] = [];
+    console.log("settings",settings)
     newFiles.slice(0, MAX_FILES_PER_BATCH).forEach((file) => {
       const { valid: ok } = validateFile(file);
       if (ok) valid.push(createUploadFile(file, settings));
