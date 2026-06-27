@@ -47,7 +47,7 @@ export const UploadSettingsPanel: React.FC<UploadSettingsPanelProps> = ({
     dispatch(fetchFolderTree());
   }, [dispatch]);
   const update = (patch: Partial<UploadSettings>) => onChange({ ...settings, ...patch });
-  console.log("update",update)
+  // console.log("update",update)
   return (
     <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
       <Typography variant="body2" fontWeight={500} sx={{ display: 'flex', alignItems: 'center', gap: 0.75 }}>

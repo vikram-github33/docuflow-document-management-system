@@ -197,7 +197,7 @@ export class FoldersService {
     // Attach documents to folders
     for (const doc of documents) {
       const folderNode = map.get(doc.folderId);
-      console.log('doc', doc);
+      // console.log('doc', doc);
       if (folderNode) {
         folderNode.documents.push({
           id: doc.id,

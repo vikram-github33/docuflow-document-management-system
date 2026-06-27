@@ -35,8 +35,8 @@ export class DocumentsController {
     @Body()
     body: UploadDocumentDto,
   ) {
-    console.log('BODY:', body);
-    console.log('FILE:', file);
+    // console.log('BODY:', body);
+    // console.log('FILE:', file);
     return this.documentsService.upload(file, body);
   }
 

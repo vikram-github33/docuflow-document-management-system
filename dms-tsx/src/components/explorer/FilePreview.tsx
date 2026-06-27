@@ -105,7 +105,6 @@ export const FilePreview: React.FC<FilePreviewProps> = ({ doc }) => {
   const cfg   = getFileIconConfig(doc.fileType);
   const isPdf = doc.fileType === 'application/pdf';
   const isImg = doc.fileType.startsWith('image/');
-  console.log("doc=====",doc)
   return (
     <Box sx={{ height: '100%', display: 'flex', flexDirection: 'column', p: 2, gap: 1.5 }}>
       {/* Header */}

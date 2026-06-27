@@ -135,7 +135,6 @@ export const FolderView: React.FC<FolderViewProps> = ({ folder }) => {
           documentId,
         };
         const res = await favouritesService.toggleFavouriteDoc(payload);
-        console.log("res", res);
         // if (res.message) {
           enqueueSnackbar(`${res.message}`, {
             variant: "success",
@@ -403,7 +402,6 @@ export const FolderView: React.FC<FolderViewProps> = ({ folder }) => {
               <TableBody>
                 {sortedDocs.map((doc) => {
                   const cfg = getFileIconConfig(doc.fileType);
-                  console.log("doc0", doc);
                   return (
                     <TableRow
                       key={doc.id}

@@ -30,7 +30,7 @@ export const UploadDropZone: React.FC<UploadDropZoneProps> = ({ onFilesSelected,
 
   const handleChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
     const selected = Array.from(e.target.files ?? []);
-    console.log("selected",selected)
+    // console.log("selected",selected)
     if (selected.length > 0) onFilesSelected(selected);
     e.target.value = '';
   }, [onFilesSelected]);

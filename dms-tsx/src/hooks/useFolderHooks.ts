@@ -14,7 +14,7 @@ export function useFolderTree() {
     try {
       const data = await folderService.getFolderTree();
       setTree(data);
-      console.log("data===",data)
+      // console.log("data===",data)
     } catch (err: any) {
       setError(err?.response?.data?.message ?? 'Failed to load folders');
     } finally {

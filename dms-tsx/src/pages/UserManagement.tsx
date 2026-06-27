@@ -93,19 +93,19 @@ const UserManagement: React.FC = () => {
   //     u.email.toLowerCase().includes(search.toLowerCase()),
   // );
   const onSubmit = async (data: any) => {
-    console.log("data", data);
+    // console.log("data", data);
     delete data.passwordHash
     try {
       if (isEdit) {
         const response = await updateUser(onSelecteduserId, data);
         if (response.data) {
-          console.log("User updated");
+          // console.log("User updated");
           reset()
         }
       } else {
         const response = await createUser(data);
         if (response.data) {
-          console.log("User Created");
+          // console.log("User Created");
         }
       }
       getUsersList()
@@ -152,7 +152,7 @@ const UserManagement: React.FC = () => {
       console.log("error", error);
     }
   };
-  console.log("getAllUser", users);
+  // console.log("getAllUser", users);
   useEffect(() => {
     getUsersList();
   }, []);

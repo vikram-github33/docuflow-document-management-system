@@ -29,9 +29,6 @@ export default function CreateFolderDialog({
       name,
       parentId,
     };
-
-    console.log(payload);
-
     // await axios.post('/folders', payload);
 
     onClose();

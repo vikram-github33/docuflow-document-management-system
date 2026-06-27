@@ -32,7 +32,7 @@ export function useUploadQueue(): UseUploadQueueResult {
       return next;
     });
   }, []);
-  console.log("files",files)
+  // console.log("files",files)
   const updateFile = useCallback((id: string, patch: Partial<UploadFile>) => {
     setFilesSync((prev) => prev.map((f) => (f.id === id ? { ...f, ...patch } : f)));
   }, [setFilesSync]);
@@ -40,7 +40,7 @@ export function useUploadQueue(): UseUploadQueueResult {
   const processFile = useCallback(async (uploadFile: UploadFile) => {
     if (activeUploads.current.has(uploadFile.id)) return;
     activeUploads.current.add(uploadFile.id);
-    console.log("uploadFile",uploadFile)
+    // console.log("uploadFile",uploadFile)
     try {
       // Step 1: Initiate — get presigned URL
       updateFile(uploadFile.id, { status: 'initiating' });
