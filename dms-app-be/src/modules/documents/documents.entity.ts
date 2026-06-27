@@ -7,10 +7,12 @@ import {
   DeleteDateColumn,
   ManyToOne,
   JoinColumn,
+  OneToMany,
 } from 'typeorm';
 
 import { User } from '../user/user.entity';
 import { Folder } from '../folders/folders.entity';
+import { Favorite } from 'src/favorites/favourites.entity';
 
 @Entity('documents')
 export class Document {
@@ -232,6 +234,12 @@ export class Document {
   })
   aiProcessedAt?: Date;
 
+  @OneToMany(
+   () => Favorite,
+   favorite => favorite.document
+)
+favorites: Favorite[];
+
   @CreateDateColumn({
     name: 'created_at',
     type: 'timestamptz',
@@ -248,7 +256,7 @@ export class Document {
     name: 'deleted_at',
     type: 'timestamptz',
   })
-  deletedAt?: Date;
+  deletedAt?: Date | null;
 
   @Column({
     name: 'deleted_by',

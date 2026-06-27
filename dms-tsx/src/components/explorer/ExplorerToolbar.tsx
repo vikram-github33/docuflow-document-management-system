@@ -118,11 +118,11 @@ export const ExplorerToolbar: React.FC<ExplorerToolbarProps> = ({
               </IconButton>
             </Tooltip>
           )}
-          <Tooltip title={`Delete "${selectedFolder.name}"`}>
+          {/* <Tooltip title={`Delete "${selectedFolder.name}"`}>
             <IconButton size="small" color="error" onClick={handleDelete}>
               <DeleteIcon sx={{ fontSize: 18 }} />
             </IconButton>
-          </Tooltip>
+          </Tooltip> */}
         </>
       )}
 

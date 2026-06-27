@@ -11,7 +11,13 @@ import {
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { StorageService } from '../storage/storage.service';
-import { ApiConsumes, ApiBody, ApiTags } from '@nestjs/swagger';
+import {
+  ApiConsumes,
+  ApiBody,
+  ApiTags,
+  ApiOperation,
+  ApiResponse,
+} from '@nestjs/swagger';
 import { UploadDocumentDto } from './upload-document.dto';
 import { DocumentsService } from './documents.service';
 @Controller('documents')
@@ -42,5 +48,32 @@ export class DocumentsController {
   @Delete('/movetotrash/:id')
   moveToTrash(@Param('id') id: string) {
     return this.documentsService.moveToTrash(id);
+  }
+
+  @Get('trash')
+  @ApiOperation({ summary: 'Get all trashed documents' })
+  @ApiResponse({
+    status: 200,
+    description: 'Trashed documents fetched successfully',
+  })
+  async getTrash() {
+    return await this.documentsService.getTrash();
+
+    // return {
+      // success: true,
+      // message: 'Trashed documents fetched successfully',
+      // documents,
+      // count: documents.length,
+    // };
+  }
+
+  @Post(':id/restore')
+  restore(@Param('id') id: string) {
+    return this.documentsService.restore(id);
+  }
+
+  @Delete(':id/permanent')
+  permanentDelete(@Param('id') id: string) {
+    return this.documentsService.permanentDelete(id);
   }
 }

@@ -15,8 +15,8 @@ import FolderCreation from 'pages/FolderCreation';
 import FolderExplorerPage from 'pages/folders/FolderExplorerPage';
 import { FolderManagementPage } from 'pages/folder/FolderManagementPage';
 import ComingSoon from 'ComingSoon';
-
-
+import TrashPage from './pages/TrashPage';
+import FavouritesPage from 'pages/FavouritesPage';
 const App: React.FC = () => {
   const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
 
@@ -38,6 +38,8 @@ const App: React.FC = () => {
         <Route path="/reports"    element={<Reports />} />
         <Route path="/settings"   element={<Settings />} />
         <Route path="/search"     element={<Search />} />
+        <Route path="/trash"     element={<TrashPage/>} />
+        <Route path="/favorites"     element={<FavouritesPage/>} />
         <Route path="*"           element={<Navigate to="/dashboard" replace />} />
       </Routes>
     </AppShell>

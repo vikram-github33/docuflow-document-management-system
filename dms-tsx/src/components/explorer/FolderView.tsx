@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import DeleteIcon from "@mui/icons-material/Delete";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
+import StarBorderIcon from '@mui/icons-material/StarBorder';
 import {
   Box,
   Typography,
@@ -401,13 +402,19 @@ export const FolderView: React.FC<FolderViewProps> = ({ folder }) => {
                         />
                       </TableCell>
                       <TableCell>
-                        <Typography
-                          variant="caption"
-                          color="text.secondary"
-                          sx={{ fontSize: 11 }}
+                        <IconButton
+                          size="small"
+                          // onClick={(e) => {
+                          //   e.stopPropagation();
+                          //   toggleFavorite(folder.id);
+                          // }}
                         >
-                          {doc.fileSize ? formatFileSize(doc.fileSize) : "—"}
-                        </Typography>
+                          {/* {folder.isFavorite ? (
+                            <StarIcon color="warning" />
+                          ) : ( */}
+                            <StarBorderIcon />
+                          {/* )} */}
+                        </IconButton>
                       </TableCell>
                       <TableCell>
                         <Typography

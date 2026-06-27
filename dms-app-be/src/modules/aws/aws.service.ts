@@ -56,7 +56,7 @@ export class AwsService {
 
   async deleteFile(key: string) {
     const command = new DeleteObjectCommand({
-      Bucket: this.configService.get('AWS_BUCKET_NAME'),
+      Bucket: this.configService.get(`${'AWS_S3_BUCKET'}`),
 
       Key: key,
     });

@@ -12,6 +12,7 @@ import {
 
 import { User } from '../user/user.entity';
 import { Document } from '../documents/documents.entity';
+import { Favorite } from 'src/favorites/favourites.entity';
 @Entity('folders')
 export class Folder {
   @PrimaryGeneratedColumn('uuid')
@@ -94,11 +95,11 @@ export class Folder {
   })
   documentCount: number;
 
-  @OneToMany(
-  () => Document,
-  (document) => document.folder,
-)
-documents: Document[];
+  @OneToMany(() => Document, (document) => document.folder)
+  documents: Document[];
+
+  @OneToMany(() => Favorite, (favorite) => favorite.folder)
+  favorites: Favorite[];
 
   @Column({
     name: 'size_bytes',

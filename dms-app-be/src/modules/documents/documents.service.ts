@@ -1,6 +1,6 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { IsNull, Not, Repository } from 'typeorm';
 import { UploadDocumentDto } from './upload-document.dto';
 import { AwsService } from '../aws/aws.service';
 import path from 'path';
@@ -163,6 +163,58 @@ export class DocumentsService {
 
     return {
       message: 'Moved to trash',
+    };
+  }
+
+  async getTrash() {
+    return this.documentRepository.find({
+      withDeleted: true,
+      where: {
+        deletedAt: Not(IsNull()),
+      },
+      order: {
+        deletedAt: 'DESC',
+      },
+    });
+  }
+
+  async restore(id: string) {
+    const document = await this.documentRepository.findOne({
+      where: { id },
+      withDeleted: true,
+    });
+
+    if (!document) {
+      throw new NotFoundException('Document not found');
+    }
+
+    document.deletedAt = null;
+
+    await this.documentRepository.save(document);
+
+    return {
+      message: 'Document restored successfully',
+    };
+  }
+
+  async permanentDelete(id: string) {
+    const document = await this.documentRepository.findOne({
+      where: { id },
+      withDeleted: true,
+    });
+
+    if (!document) {
+      throw new NotFoundException('Document not found');
+    }
+
+    // Delete from S3
+    await this.awsService.deleteFile(document.fileUrl);
+
+    // Remove from DB
+    await this.documentRepository.remove(document);
+
+    return {
+      message: 'Document permanently deleted',
     };
   }
 }

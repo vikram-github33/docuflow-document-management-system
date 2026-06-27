@@ -9,6 +9,7 @@ import {
 } from 'typeorm';
 import { Folder } from '../folders/folders.entity';
 import { Document } from '../documents/documents.entity';
+import { Favorite } from 'src/favorites/favourites.entity';
 export enum UserRole {
   ADMIN = 'ADMIN',
   MANAGER = 'MANAGER',
@@ -63,6 +64,9 @@ export class User {
     nullable: true,
   })
   avatarUrl?: string;
+
+  @OneToMany(() => Favorite, (favorite) => favorite.user)
+  favorites: Favorite[];
 
   @Column({
     type: 'enum',

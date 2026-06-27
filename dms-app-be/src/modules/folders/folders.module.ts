@@ -4,9 +4,11 @@ import { Folder } from './folders.entity';
 import { FoldersService } from './folders.service';
 import { FoldersController } from './folders.controller';
 import { Document } from '../documents/documents.entity';
+import { Favorite } from 'src/favorites/favourites.entity';
+import { User } from '../user/user.entity';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Folder,Document]),],
+  imports: [TypeOrmModule.forFeature([Folder,Document,Favorite,User]),],
   controllers: [FoldersController],
   providers: [FoldersService],
   exports: [FoldersService],
