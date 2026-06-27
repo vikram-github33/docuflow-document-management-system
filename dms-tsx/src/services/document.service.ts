@@ -12,7 +12,7 @@ api.interceptors.request.use((config) => {
   return config;
 });
 
-export async function moveFilesInTrash(id: string): Promise<any> {
+export async function  moveFilesInTrash(id: string): Promise<any> {
     const { data } = await api.delete<any>(API_ENDPOINTS.MOVE_DOCUMENT_TRASH(id));
     return data;
   }

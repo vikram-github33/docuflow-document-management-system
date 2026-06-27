@@ -12,6 +12,7 @@ export interface FolderDocument {
   fileSize?: number;
   createdAt?: string;
   updatedAt?: string;
+  favorites:any[]
 }
 
 export interface FolderTreeNode {

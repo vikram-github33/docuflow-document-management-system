@@ -7,12 +7,12 @@ import {
   JoinColumn,
 } from 'typeorm';
 
-import { User } from '../modules/user/user.entity';
-import { Document } from '../modules/documents/documents.entity';
-import { Folder } from '../modules/folders/folders.entity';
+import { User } from '../user/user.entity';
+import { Document } from '../documents/documents.entity';
+import { Folder } from '../folders/folders.entity';
 
 @Entity('favorites')
-export class Favorite {
+export class  Favorite {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 

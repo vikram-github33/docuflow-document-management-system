@@ -12,7 +12,7 @@ import {
 
 import { User } from '../user/user.entity';
 import { Document } from '../documents/documents.entity';
-import { Favorite } from 'src/favorites/favourites.entity';
+import { Favorite } from 'src/modules/favorites/favourites.entity';
 @Entity('folders')
 export class Folder {
   @PrimaryGeneratedColumn('uuid')

@@ -9,8 +9,8 @@ import { ApiTags } from '@nestjs/swagger';
 import { FavoritesService } from './favorites.service';
 import { ToggleFavoriteDto } from './toggle-favorite.dto';
 
-@ApiTags('Favorites')
-@Controller('favorites')
+@ApiTags('favourites')
+@Controller('favourites')
 export class FavoritesController {
   constructor(
     private readonly favoritesService: FavoritesService,

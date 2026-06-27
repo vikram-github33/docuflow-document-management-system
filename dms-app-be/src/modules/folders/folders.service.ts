@@ -1,6 +1,9 @@
 import {
-  Injectable, NotFoundException, ConflictException,
-  BadRequestException, ForbiddenException,
+  Injectable,
+  NotFoundException,
+  ConflictException,
+  BadRequestException,
+  ForbiddenException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, DataSource, IsNull } from 'typeorm';
@@ -21,7 +24,11 @@ export class FoldersService {
   ) {}
 
   private sanitizeSegment(name: string): string {
-    return name.trim().replace(/[/\\?%*:|"<>]/g, '').replace(/\s+/g, ' ').trim();
+    return name
+      .trim()
+      .replace(/[/\\?%*:|"<>]/g, '')
+      .replace(/\s+/g, ' ')
+      .trim();
   }
 
   private buildPath(parentPath: string | null, name: string): string {
@@ -34,12 +41,12 @@ export class FoldersService {
       id: folder.id,
       name: folder.name,
       path: folder.path,
-      parentId: folder.parentId??null,
-      color: folder.color??'',
-      icon: folder.icon??'',
+      parentId: folder.parentId ?? null,
+      color: folder.color ?? '',
+      icon: folder.icon ?? '',
       isArchived: folder.isArchived,
       documentCount: folder.documentCount,
-      documents:[],
+      documents: [],
       children: (folder.children ?? []).map((c) => this.toTreeNode(c)),
     };
   }
@@ -97,9 +104,7 @@ export class FoldersService {
       });
 
       if (pathConflict) {
-        throw new ConflictException(
-          `Folder path "${newPath}" already exists`,
-        );
+        throw new ConflictException(`Folder path "${newPath}" already exists`);
       }
 
       const folder = repo.create({
@@ -158,89 +163,93 @@ export class FoldersService {
   // }
 
   async getFolderTreeWithFiles(): Promise<FolderTreeNodeDto[]> {
-  const folders = await this.folderRepo.find({
-    order: { name: 'ASC' },
-  });
-
-  const documents = await this.documentRepository.find({
-    where:{
-      deletedAt:IsNull()
-    }
-  });
-
-  const map = new Map<string, FolderTreeNodeDto>();
-
-  // Create folder nodes
-  for (const folder of folders) {
-    map.set(folder.id, {
-      id: folder.id,
-      name: folder.name,
-      path: folder.path,
-      parentId: folder.parentId ?? null,
-      color: folder.color ?? '',
-      icon: folder.icon ?? '',
-      isArchived: folder.isArchived,
-      documentCount: folder.documentCount,
-      documents: [],
-      children: [],
+    const folders = await this.folderRepo.find({
+      order: { name: 'ASC' },
     });
-  }
 
-  // Attach documents to folders
-  for (const doc of documents) {
-    const folderNode = map.get(doc.folderId);
+    const documents = await this.documentRepository.find({
+      where: {
+        deletedAt: IsNull(),
+      },
+      relations: {
+        favorites: true,
+      },
+    });
 
-    if (folderNode) {
-      folderNode.documents.push({
-        id: doc.id,
-        fileName: doc.fileName,
-        fileUrl: doc.fileUrl,
-        fileType: doc.fileType,
+    const map = new Map<string, FolderTreeNodeDto>();
+
+    // Create folder nodes
+    for (const folder of folders) {
+      map.set(folder.id, {
+        id: folder.id,
+        name: folder.name,
+        path: folder.path,
+        parentId: folder.parentId ?? null,
+        color: folder.color ?? '',
+        icon: folder.icon ?? '',
+        isArchived: folder.isArchived,
+        documentCount: folder.documentCount,
+        documents: [],
+        children: [],
       });
     }
-  }
 
-  const roots: FolderTreeNodeDto[] = [];
-
-  // Build tree
-  for (const folder of folders) {
-    const node = map.get(folder.id)!;
-
-    if (folder.parentId && map.has(folder.parentId)) {
-      map.get(folder.parentId)!.children.push(node);
-    } else {
-      roots.push(node);
+    // Attach documents to folders
+    for (const doc of documents) {
+      const folderNode = map.get(doc.folderId);
+      console.log('doc', doc);
+      if (folderNode) {
+        folderNode.documents.push({
+          id: doc.id,
+          fileName: doc.fileName,
+          fileUrl: doc.fileUrl,
+          fileType: doc.fileType,
+          favorites:doc.favorites
+        });
+      }
     }
-  }
 
-  return roots;
-}
- async getRootFolders(): Promise<Folder[]> {
-  return this.folderRepo.find({
-    where: {
-      parentId: IsNull(),
-    },
-    relations: {
-      owner: true,
-      children: true,
-    },
-    order: {
-      name: 'ASC',
-    },
-  });
-}
+    const roots: FolderTreeNodeDto[] = [];
+
+    // Build tree
+    for (const folder of folders) {
+      const node = map.get(folder.id)!;
+
+      if (folder.parentId && map.has(folder.parentId)) {
+        map.get(folder.parentId)!.children.push(node);
+      } else {
+        roots.push(node);
+      }
+    }
+
+    return roots;
+  }
+  async getRootFolders(): Promise<Folder[]> {
+    return this.folderRepo.find({
+      where: {
+        parentId: IsNull(),
+      },
+      relations: {
+        owner: true,
+        children: true,
+      },
+      order: {
+        name: 'ASC',
+      },
+    });
+  }
 
   async getFolderById(id: string): Promise<Folder> {
     const folder = await this.folderRepo.findOne({
       where: { id },
-       relations: {
-      owner: true,
-      children: true,
-      parent:true
-    },
-    order: {
-      name: 'ASC',
-    },
+      relations: {
+        owner: true,
+        children: true,
+        parent: true,
+      },
+      order: {
+        name: 'ASC',
+      },
     });
     if (!folder) throw new NotFoundException(`Folder "${id}" not found`);
     return folder;
@@ -250,12 +259,12 @@ export class FoldersService {
     await this.getFolderById(id);
     return this.folderRepo.find({
       where: { parentId: id },
-     relations: {
-      owner: true,
-    },
-    order: {
-      name: 'ASC',
-    },
+      relations: {
+        owner: true,
+      },
+      order: {
+        name: 'ASC',
+      },
     });
   }
 
@@ -270,13 +279,13 @@ export class FoldersService {
       const folder = await repo.findOne({
         where: { id },
         relations: {
-      // owner: true,
-      // children: true,
-      parent:true
-    },
-    order: {
-      name: 'ASC',
-    },
+          // owner: true,
+          // children: true,
+          parent: true,
+        },
+        order: {
+          name: 'ASC',
+        },
       });
 
       if (!folder) {
@@ -329,44 +338,64 @@ export class FoldersService {
   }
 
   private async updateDescendantPaths(
-    repo: Repository<Folder>, oldBase: string, newBase: string,
+    repo: Repository<Folder>,
+    oldBase: string,
+    newBase: string,
   ): Promise<void> {
     const descendants = await repo
       .createQueryBuilder('f')
       .where('f.path LIKE :prefix', { prefix: `${oldBase}/%` })
       .getMany();
-    for (const d of descendants) d.path = newBase + d.path.slice(oldBase.length);
+    for (const d of descendants)
+      d.path = newBase + d.path.slice(oldBase.length);
     if (descendants.length > 0) await repo.save(descendants);
   }
 
-  async deleteFolder(id: string, requesterId: string): Promise<{ message: string }> {
-    const folder = await this.folderRepo.findOne({ where: { id }, relations: {
-      // owner: true,
-      // children: true,
-      parent:true
-    },
-    order: {
-      name: 'ASC',
-    }, });
+  async deleteFolder(
+    id: string,
+    requesterId: string,
+  ): Promise<{ message: string }> {
+    const folder = await this.folderRepo.findOne({
+      where: { id },
+      relations: {
+        // owner: true,
+        // children: true,
+        parent: true,
+      },
+      order: {
+        name: 'ASC',
+      },
+    });
     if (!folder) throw new NotFoundException(`Folder "${id}" not found`);
-    if (folder.ownerId !== requesterId) throw new ForbiddenException('Permission denied');
+    if (folder.ownerId !== requesterId)
+      throw new ForbiddenException('Permission denied');
     if (folder.children?.length > 0) {
-      throw new BadRequestException('Delete all subfolders before deleting this folder');
+      throw new BadRequestException(
+        'Delete all subfolders before deleting this folder',
+      );
     }
     if (folder.documentCount > 0) {
-      throw new BadRequestException('Move or delete documents before deleting this folder');
+      throw new BadRequestException(
+        'Move or delete documents before deleting this folder',
+      );
     }
     await this.folderRepo.remove(folder);
     return { message: `Folder "${folder.name}" deleted successfully` };
   }
 
   // Called by DocumentsService when a document is uploaded/deleted
-  async incrementDocumentCount(folderId: string, sizeBytes: number): Promise<void> {
+  async incrementDocumentCount(
+    folderId: string,
+    sizeBytes: number,
+  ): Promise<void> {
     await this.folderRepo.increment({ id: folderId }, 'documentCount', 1);
     await this.folderRepo.increment({ id: folderId }, 'totalSize', sizeBytes);
   }
 
-  async decrementDocumentCount(folderId: string, sizeBytes: number): Promise<void> {
+  async decrementDocumentCount(
+    folderId: string,
+    sizeBytes: number,
+  ): Promise<void> {
     await this.folderRepo.decrement({ id: folderId }, 'documentCount', 1);
     await this.folderRepo.decrement({ id: folderId }, 'totalSize', sizeBytes);
   }

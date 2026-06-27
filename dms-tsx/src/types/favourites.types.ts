@@ -14,6 +14,11 @@ export interface FavouriteDocument {
   markedFavouriteAt?: string;
 }
 
+export interface ToggleFavoriteDoc{
+  folderId?: string | null;
+  fileId?: string | null;
+}
+
 export interface FavouriteFolder {
   id: string;
   name: string;

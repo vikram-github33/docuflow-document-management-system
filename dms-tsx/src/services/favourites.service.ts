@@ -2,7 +2,7 @@ import axios from 'axios';
 import type { FavouriteDocument, FavouriteFolder } from '../types/favourites.types';
 
 const api = axios.create({
-  baseURL: process.env.REACT_APP_API_BASE_URL ?? 'http://localhost:3000',
+  baseURL: process.env.REACT_APP_API_BASE_URL ?? 'http://localhost:7200',
   headers: { 'Content-Type': 'application/json' },
 });
 
@@ -16,6 +16,11 @@ export const favouritesService = {
   /** GET /favourites/documents */
   async getFavouriteDocuments(): Promise<FavouriteDocument[]> {
     const { data } = await api.get<FavouriteDocument[]>('/favourites/documents');
+    return data;
+  },
+
+  async toggleFavouriteDoc(payload:any) {
+    const { data } = await api.post('/favourites/toggle',payload);
     return data;
   },
 

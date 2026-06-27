@@ -12,7 +12,7 @@ import {
 
 import { User } from '../user/user.entity';
 import { Folder } from '../folders/folders.entity';
-import { Favorite } from 'src/favorites/favourites.entity';
+import { Favorite } from 'src/modules/favorites/favourites.entity';
 
 @Entity('documents')
 export class Document {

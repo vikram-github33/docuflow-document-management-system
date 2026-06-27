@@ -4,7 +4,7 @@ import { Folder } from './folders.entity';
 import { FoldersService } from './folders.service';
 import { FoldersController } from './folders.controller';
 import { Document } from '../documents/documents.entity';
-import { Favorite } from 'src/favorites/favourites.entity';
+import { Favorite } from 'src/modules/favorites/favourites.entity';
 import { User } from '../user/user.entity';
 
 @Module({

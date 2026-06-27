@@ -9,7 +9,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { StorageModule } from './modules/storage/storage.module';
 // import { AiModule } from './ai/ai.module';
 import { AIModule } from './modules/ai/ai.module';
-import { FavoritesModule } from './favorites/favorites.module';
+import { FavoritesModule } from './modules/favorites/favorites.module';
 import { ScheduleModule } from '@nestjs/schedule';
 @Module({
   imports: [

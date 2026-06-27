@@ -3,6 +3,7 @@ export class DocumentTreeDto {
   fileName: string;
   fileUrl: string;
   fileType: string;
+  favorites:any[]
 }
 
 export class FolderTreeNodeDto {

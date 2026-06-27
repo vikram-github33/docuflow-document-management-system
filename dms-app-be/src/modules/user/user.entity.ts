@@ -9,7 +9,7 @@ import {
 } from 'typeorm';
 import { Folder } from '../folders/folders.entity';
 import { Document } from '../documents/documents.entity';
-import { Favorite } from 'src/favorites/favourites.entity';
+import { Favorite } from 'src/modules/favorites/favourites.entity';
 export enum UserRole {
   ADMIN = 'ADMIN',
   MANAGER = 'MANAGER',

@@ -1,7 +1,8 @@
-import React, { useState } from "react";
+import React, { useCallback, useState } from "react";
 import DeleteIcon from "@mui/icons-material/Delete";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
-import StarBorderIcon from '@mui/icons-material/StarBorder';
+import StarBorderIcon from "@mui/icons-material/StarBorder";
+import StarIcon from '@mui/icons-material/Star';
 import {
   Box,
   Typography,
@@ -46,8 +47,10 @@ import {
   timeAgo,
   formatSizeBytes,
 } from "../../utils/fileIcons";
+import { useSnackbar } from "notistack";
 import type { FolderTreeNode, FolderDocument } from "../../types/folder.types";
 import { moveFilesInTrash } from "services/document.service";
+import { favouritesService } from "services/favourites.service";
 
 function FileIcon({ fileType, color }: { fileType: string; color: string }) {
   const sx = { fontSize: 18, color };
@@ -72,11 +75,10 @@ export const FolderView: React.FC<FolderViewProps> = ({ folder }) => {
   const [selectedDoc, setSelectedDoc] = useState<any>(null);
   const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
   const open = Boolean(anchorEl);
-
+  const { enqueueSnackbar } = useSnackbar();
   const dispatch = useAppDispatch();
   const { tree } = useAppSelector((s) => s.folders);
   const color = folder.color ?? "#1976d2";
-
   const [sortField, setSortField] = useState<SortField>("name");
   const [sortDir, setSortDir] = useState<SortDir>("asc");
 
@@ -125,7 +127,32 @@ export const FolderView: React.FC<FolderViewProps> = ({ folder }) => {
     dispatch(fetchFolderTree());
     // Refresh your list here
   };
-
+  const toggleFavorite = useCallback(
+    async (folderId: string, documentId: string) => {
+      try {
+        let payload = {
+          folderId,
+          documentId,
+        };
+        const res = await favouritesService.toggleFavouriteDoc(payload);
+        console.log("res", res);
+        // if (res.message) {
+          enqueueSnackbar(`${res.message}`, {
+            variant: "success",
+            autoHideDuration: 3000,
+            anchorOrigin: {
+              vertical: "top",
+              horizontal: "right",
+            },
+          });
+          dispatch(fetchFolderTree());
+        // }
+      } catch (error) {
+        console.log("error", error);
+      }
+    },
+    [],
+  );
   return (
     <Box
       sx={{
@@ -346,9 +373,9 @@ export const FolderView: React.FC<FolderViewProps> = ({ folder }) => {
                   <TableCell
                     sx={{ fontSize: 11, fontWeight: 600, py: 1, width: 80 }}
                   >
-                    Size
+                    Favorite
                   </TableCell>
-                  <TableCell
+                  {/* <TableCell
                     sx={{ fontSize: 11, fontWeight: 600, py: 1, width: 100 }}
                   >
                     <TableSortLabel
@@ -358,6 +385,17 @@ export const FolderView: React.FC<FolderViewProps> = ({ folder }) => {
                     >
                       Modified
                     </TableSortLabel>
+                  </TableCell> */}
+                    <TableCell
+                    sx={{ fontSize: 11, fontWeight: 600, py: 1, width: 100 }}
+                  >
+                    <TableSortLabel
+                      active={sortField === "modified"}
+                      direction={sortField === "modified" ? sortDir : "asc"}
+                      onClick={() => handleSort("modified")}
+                    >
+                      Action
+                    </TableSortLabel>
                   </TableCell>
                   <TableCell sx={{ width: 40, py: 1 }} />
                 </TableRow>
@@ -365,6 +403,7 @@ export const FolderView: React.FC<FolderViewProps> = ({ folder }) => {
               <TableBody>
                 {sortedDocs.map((doc) => {
                   const cfg = getFileIconConfig(doc.fileType);
+                  console.log("doc0", doc);
                   return (
                     <TableRow
                       key={doc.id}
@@ -404,19 +443,29 @@ export const FolderView: React.FC<FolderViewProps> = ({ folder }) => {
                       <TableCell>
                         <IconButton
                           size="small"
-                          // onClick={(e) => {
-                          //   e.stopPropagation();
-                          //   toggleFavorite(folder.id);
-                          // }}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            toggleFavorite(folder.id, doc.id);
+                          }}
                         >
-                          {/* {folder.isFavorite ? (
-                            <StarIcon color="warning" />
-                          ) : ( */}
-                            <StarBorderIcon />
-                          {/* )} */}
+                          {doc.favorites?.length > 0 ? (
+                            <StarIcon
+                              sx={{
+                                color: "#FFB300",
+                                fontSize: 24,
+                              }}
+                            />
+                          ) : (
+                            <StarBorderIcon
+                              sx={{
+                                color: "#757575",
+                                fontSize: 24,
+                              }}
+                            />
+                          )}
                         </IconButton>
                       </TableCell>
-                      <TableCell>
+                      {/* <TableCell>
                         <Typography
                           variant="caption"
                           color="text.secondary"
@@ -424,7 +473,7 @@ export const FolderView: React.FC<FolderViewProps> = ({ folder }) => {
                         >
                           {doc.updatedAt ? timeAgo(doc.updatedAt) : "—"}
                         </Typography>
-                      </TableCell>
+                      </TableCell> */}
                       <TableCell>
                         <Tooltip title="More actions">
                           <IconButton
