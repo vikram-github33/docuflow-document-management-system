@@ -1,0 +1,9 @@
+export enum ActivityType {
+  UPLOADED = 'UPLOADED',
+  VIEWED = 'VIEWED',
+  UPDATED = 'UPDATED',
+  SHARED = 'SHARED',
+  DOWNLOADED = 'DOWNLOADED',
+  RESTORED = 'RESTORED',
+  MOVED = 'MOVED',
+}

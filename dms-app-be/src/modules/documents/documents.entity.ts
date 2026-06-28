@@ -13,6 +13,7 @@ import {
 import { User } from '../user/user.entity';
 import { Folder } from '../folders/folders.entity';
 import { Favorite } from 'src/modules/favorites/favourites.entity';
+import { DocumentActivity } from '../document-activity/documentactivity.entity';
 
 @Entity('documents')
 export class Document {
@@ -234,11 +235,11 @@ export class Document {
   })
   aiProcessedAt?: Date;
 
-  @OneToMany(
-   () => Favorite,
-   favorite => favorite.document
-)
-favorites: Favorite[];
+  @OneToMany(() => Favorite, (favorite) => favorite.document)
+  favorites: Favorite[];
+
+  @OneToMany(() => DocumentActivity, (activity) => activity.document)
+  activities: DocumentActivity[];
 
   @CreateDateColumn({
     name: 'created_at',

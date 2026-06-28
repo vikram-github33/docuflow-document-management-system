@@ -10,9 +10,12 @@ import { OcrService } from '../ocr/ocr.service';
 import { AiService } from '../ai/ai.service';
 import { OllamaProvider } from '../ai/ollama.provider.';
 import { GeminiProvider } from '../ai/gemini.provider';
+// import { DocumentActivity } from '../document-activity/documentactivity.entity';
+import { User } from '../user/user.entity';
+import { DocumentActivityModule } from '../document-activity/document-activity.module';
 @Module({
-  imports: [TypeOrmModule.forFeature([Document,Folder]),StorageModule,],
+  imports: [TypeOrmModule.forFeature([Document,Folder,User]),StorageModule,DocumentActivityModule],
   controllers: [DocumentsController],
-  providers: [DocumentsService,AwsService,OcrService,AiService,OllamaProvider,GeminiProvider]
+  providers: [DocumentsService,AwsService,OcrService,AiService,OllamaProvider,GeminiProvider,]
 })
 export class DocumentsModule {}

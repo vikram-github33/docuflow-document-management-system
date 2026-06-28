@@ -18,33 +18,58 @@ import ComingSoon from "ComingSoon";
 import TrashPage from "./pages/TrashPage";
 import FavouritesPage from "pages/FavouritesPage";
 import DashboardPage from "pages/DashboardPage";
-const App: React.FC = () => {
-  const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
-
-  if (!isLoggedIn) {
-    return <Login onLogin={() => setIsLoggedIn(true)} />;
-  }
-
-  return (
-    <AppShell>
-      <Routes>
-        <Route path="/" element={<Navigate to="/dashboard" replace />} />
-        <Route path="/dashboard" element={<DashboardPage />} />
-        <Route path="/folder" element={<FolderManagementPage />} />
-        <Route path="/documents" element={<DocumentExplorer />} />
-        <Route path="/upload" element={<UploadCenterPage />} />
-        <Route path="/approvals" element={<Approvals />} />
-        <Route path="/users" element={<UserManagement />} />
-        <Route path="/audit" element={<AuditLogs />} />
-        <Route path="/reports" element={<Reports />} />
-        <Route path="/settings" element={<Settings />} />
-        <Route path="/search" element={<Search />} />
-        <Route path="/trash" element={<TrashPage />} />
-        <Route path="/favorites" element={<FavouritesPage />} />
-        <Route path="*" element={<Navigate to="/dashboard" replace />} />
-      </Routes>
-    </AppShell>
+import SignupForm from "pages/auth/SignupForm";
+function App() {
+  const [isLoggedIn, setIsLoggedIn] = useState(
+    !!localStorage.getItem("accessToken"),
   );
-};
+  console.log("isLoggedIn", isLoggedIn);
+  return (
+    <Routes>
+      {!isLoggedIn ? (
+        <>
+          <Route
+            path="/login"
+            element={<Login onLogin={() => setIsLoggedIn(true)} />}
+          />
+
+          <Route path="/signup" element={<SignupForm />} />
+
+          <Route path="*" element={<Navigate to="/login" replace />} />
+        </>
+      ) : (
+        <Route
+          path="/*"
+          element={
+            <AppShell>
+              <Routes>
+                <Route
+                  path="/"
+                  element={<Navigate to="/dashboard" replace />}
+                />
+                <Route path="/dashboard" element={<DashboardPage />} />
+                <Route path="/folder" element={<FolderManagementPage />} />
+                <Route path="/documents" element={<DocumentExplorer />} />
+                <Route path="/upload" element={<UploadCenterPage />} />
+                <Route path="/approvals" element={<Approvals />} />
+                <Route path="/users" element={<UserManagement />} />
+                <Route path="/audit" element={<AuditLogs />} />
+                <Route path="/reports" element={<Reports />} />
+                <Route path="/settings" element={<Settings />} />
+                <Route path="/search" element={<Search />} />
+                <Route path="/trash" element={<TrashPage />} />
+                <Route path="/favorites" element={<FavouritesPage />} />
+                <Route
+                  path="*"
+                  element={<Navigate to="/dashboard" replace />}
+                />
+              </Routes>
+            </AppShell>
+          }
+        />
+      )}
+    </Routes>
+  );
+}
 
 export default App;

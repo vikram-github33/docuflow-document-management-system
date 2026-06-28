@@ -7,14 +7,23 @@ import path from 'path';
 import { Document } from './documents.entity';
 import { OcrService } from '../ocr/ocr.service';
 import { AiService } from '../ai/ai.service';
+import { DocumentActivity } from '../document-activity/documentactivity.entity';
+import { ActivityType } from 'src/enum/activity.enum';
+import { User } from '../user/user.entity';
+import { DocumentActivityService } from '../document-activity/document-activity.service';
 @Injectable()
 export class DocumentsService {
   constructor(
     @InjectRepository(Document)
     private readonly documentRepository: Repository<Document>,
+    // @InjectRepository(DocumentActivity)
+    // private readonly activityRepository: Repository<DocumentActivity>,
+    @InjectRepository(User)
+    private readonly userRepository: Repository<User>,
     private readonly awsService: AwsService,
     private readonly ocrService: OcrService,
     private readonly aiService: AiService,
+    private readonly documentActivityService: DocumentActivityService,
   ) {}
   async upload(file: Express.Multer.File, body: UploadDocumentDto) {
     const fileKey = `documents/${Date.now()}-${file.originalname}`;
@@ -30,7 +39,29 @@ export class DocumentsService {
 
       ownerId: '6e498a66-b48d-4dea-acb1-dda2104b6606',
     });
+    const user = await this.userRepository.findOne({
+      where: {
+        id: body.ownerId,
+      },
+    });
 
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+
+    // const activity = this.activityRepository.create({
+    //   user,
+    //   document,
+    //   activityType: ActivityType.UPLOADED,
+    // });
+
+    // await this.activityRepository.save(activity);
+
+    await this.documentActivityService.createActivity(
+      user,
+      document,
+      ActivityType.UPLOADED,
+    );
     // background processing
     setImmediate(() => {
       this.processDocument(document.id, file);

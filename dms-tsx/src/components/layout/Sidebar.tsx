@@ -36,7 +36,7 @@ const NAV: NavSection[] = [
     items: [
       { label: 'Dashboard',     icon: <DashboardIcon />,   path: '/dashboard' },
       { label: 'Documents',     icon: <FolderOpenIcon />,  path: '/documents', badge: '1.2k' },
-      { label: 'Shared with me',icon: <ShareIcon />,       path: '/shared' },
+      { label: 'Shared with me',icon: <ShareIcon />,       path: '/coming-soon' },
       { label: 'Favorites',     icon: <StarIcon />,        path: '/favorites' },
       { label: 'Recent',        icon: <AccessTimeIcon />,  path: '/recent' },
       { label: 'Trash',         icon: <DeleteIcon />,      path: '/trash' },
