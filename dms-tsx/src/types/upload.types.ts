@@ -31,9 +31,9 @@ export interface UploadFile {
   errorMessage?: string;
   s3Key?: string;
   documentId?: string;
-  folderId?: string | null;
-  tags?: string[];
-  description?: string;
+  //folderId?: string | null;
+  //tags?: string[];
+ // description?: string;
   addedAt: Date;
   completedAt?: Date;
 }

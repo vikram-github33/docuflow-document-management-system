@@ -45,20 +45,20 @@ export const UploadCenterPage: React.FC = () => {
     setToasts((prev) => prev.filter((t) => t.id !== id));
   }, []);
 
-  const handleFilesSelected = useCallback(
+  const handleFilesSelected = 
     (selected: File[]) => {
       if (!selected.length) return;
+      console.log("handleFilesSelected settings:", settings);
       addFiles(selected, settings);
       pushToast(`${selected.length} file(s) added to queue.`, 'info');
-    },
-    [addFiles, settings, pushToast]
-  );
-
+    }
+  
+// console.log("settings====================",settings)
   const handleStartUpload = useCallback(() => {
     const pendingCount = files.filter((f) => f.status === 'pending').length;
     if (!pendingCount) return;
     console.log("files",files)
-    startPending();
+    startPending(settings);
     pushToast(`Starting upload for ${pendingCount} file(s)...`, 'info');
   }, [files, startPending, pushToast]);
 

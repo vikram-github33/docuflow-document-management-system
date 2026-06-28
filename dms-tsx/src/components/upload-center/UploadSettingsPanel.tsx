@@ -33,19 +33,20 @@ export const UploadSettingsPanel: React.FC<UploadSettingsPanelProps> = ({
   const [loadingFolders, setLoadingFolders] = useState(false);
   const dispatch = useAppDispatch();
   const { tree, loading, error } = useAppSelector((state) => state.folders);
-  useEffect(() => {
-    setLoadingFolders(true);
-    fetchFolders()
-      .then(setFolders)
-      .catch(console.error)
-      .finally(() => setLoadingFolders(false));
-  }, []);
+  // console.log("tree",tree)
+  // useEffect(() => {
+  //   setLoadingFolders(true);
+  //   fetchFolders()
+  //     .then(setFolders)
+  //     .catch(console.error)
+  //     .finally(() => setLoadingFolders(false));
+  // }, []);
   useEffect(() => {
     dispatch(fetchFolderTree());
   }, [dispatch]);
   const update = (patch: Partial<UploadSettings>) =>
     onChange({ ...settings, ...patch });
-  // console.log("update",update)
+  // console.log("settings",settings)
   return (
     <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
       <Typography

@@ -27,7 +27,7 @@ export function validateFile(file: File): { valid: boolean; error?: string } {
   return { valid: true };
 }
 
-export function createUploadFile(file: File, settings: UploadSettings): UploadFile {
+export function createUploadFile(file: File): UploadFile {
   return {
     id: generateUploadId(),
     file,
@@ -36,9 +36,6 @@ export function createUploadFile(file: File, settings: UploadSettings): UploadFi
     mimeType: file.type,
     status: 'pending',
     progress: 0,
-    folderId: settings.folderId,
-    tags: settings.tags,
-    description: settings.description,
     addedAt: new Date(),
   };
 }
