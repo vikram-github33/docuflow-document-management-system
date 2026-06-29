@@ -38,7 +38,7 @@ const NAV: NavSection[] = [
       { label: 'Documents',     icon: <FolderOpenIcon />,  path: '/documents', badge: '1.2k' },
       { label: 'Shared with me',icon: <ShareIcon />,       path: '/coming-soon' },
       { label: 'Favorites',     icon: <StarIcon />,        path: '/favorites' },
-      { label: 'Recent',        icon: <AccessTimeIcon />,  path: '/recent' },
+      { label: 'Recent',        icon: <AccessTimeIcon />,  path: '/recent-activity' },
       { label: 'Trash',         icon: <DeleteIcon />,      path: '/trash' },
     ],
   },

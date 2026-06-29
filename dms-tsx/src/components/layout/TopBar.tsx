@@ -5,6 +5,7 @@ import MenuIcon           from '@mui/icons-material/Menu';
 import SearchIcon         from '@mui/icons-material/Search';
 import NotificationsIcon  from '@mui/icons-material/Notifications';
 import HelpOutlineIcon    from '@mui/icons-material/HelpOutline';
+import UserProfilePopover from 'pages/UserProfilePopover';
 
 interface TopBarProps { onMenuClick: () => void }
 
@@ -32,7 +33,7 @@ const TopBar: React.FC<TopBarProps> = ({ onMenuClick }) => {
       </IconButton>
 
       {/* Search */}
-      <Box sx={{ flex: 1, display: 'flex', alignItems: 'center', gap: 1, bgcolor: 'grey.100', borderRadius: 6, px: 1.5, py: 0.6, maxWidth: 420 }}>
+      {/* <Box sx={{ flex: 1, display: 'flex', alignItems: 'center', gap: 1, bgcolor: 'grey.100', borderRadius: 6, px: 1.5, py: 0.6, maxWidth: 420 }}>
         <SearchIcon sx={{ fontSize: 17, color: 'grey.400' }} />
         <InputBase
           placeholder="Search documents, folders…"
@@ -42,11 +43,11 @@ const TopBar: React.FC<TopBarProps> = ({ onMenuClick }) => {
           sx={{ fontSize: '0.8125rem', flex: 1 }}
           inputProps={{ 'aria-label': 'Search' }}
         />
-      </Box>
+      </Box> */}
 
       {/* Right actions */}
       <Box sx={{ ml: 'auto', display: 'flex', alignItems: 'center', gap: 0.5 }}>
-        <Tooltip title="Notifications">
+        {/* <Tooltip title="Notifications">
           <IconButton size="small" sx={{ color: 'text.secondary' }}>
             <Badge badgeContent={3} color="error" sx={{ '& .MuiBadge-badge': { fontSize: 9, minWidth: 16, height: 16 } }}>
               <NotificationsIcon fontSize="small" />
@@ -57,10 +58,11 @@ const TopBar: React.FC<TopBarProps> = ({ onMenuClick }) => {
           <IconButton size="small" sx={{ color: 'text.secondary' }}>
             <HelpOutlineIcon fontSize="small" />
           </IconButton>
-        </Tooltip>
-        <Avatar sx={{ width: 30, height: 30, bgcolor: '#DBEAFE', color: 'primary.dark', fontSize: 12, fontWeight: 600, ml: 0.5, cursor: 'pointer' }}>
+        </Tooltip> */}
+        {/* <Avatar sx={{ width: 30, height: 30, bgcolor: '#DBEAFE', color: 'primary.dark', fontSize: 12, fontWeight: 600, ml: 0.5, cursor: 'pointer' }}>
           AS
-        </Avatar>
+        </Avatar> */}
+        <UserProfilePopover/>
       </Box>
     </Box>
   );

@@ -84,6 +84,7 @@ export class AuthController {
   async logout(
     @Body() refreshTokenDto: RefreshTokenDto,
   ) {
+    console.log("refreshTokenDto",refreshTokenDto)
     return this.authService.logout(refreshTokenDto);
   }
 

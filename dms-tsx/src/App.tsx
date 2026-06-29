@@ -19,11 +19,12 @@ import TrashPage from "./pages/TrashPage";
 import FavouritesPage from "pages/FavouritesPage";
 import DashboardPage from "pages/DashboardPage";
 import SignupForm from "pages/auth/SignupForm";
+import RecentActivityPage from "pages/RecentActivityPage";
 function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(
     !!localStorage.getItem("accessToken"),
   );
-  console.log("isLoggedIn", isLoggedIn);
+ 
   return (
     <Routes>
       {!isLoggedIn ? (
@@ -59,6 +60,7 @@ function App() {
                 <Route path="/search" element={<Search />} />
                 <Route path="/trash" element={<TrashPage />} />
                 <Route path="/favorites" element={<FavouritesPage />} />
+                <Route path="/recent-activity" element={<RecentActivityPage/>} />
                 <Route
                   path="*"
                   element={<Navigate to="/dashboard" replace />}

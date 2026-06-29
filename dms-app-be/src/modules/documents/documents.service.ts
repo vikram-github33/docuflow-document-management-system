@@ -182,15 +182,33 @@ export class DocumentsService {
   async moveToTrash(id: string) {
     const document = await this.documentRepository.findOne({
       where: { id },
+      relations: {
+        owner: true,
+      },
     });
 
     if (!document) {
-      throw new NotFoundException();
+      throw new NotFoundException('Document not found');
     }
 
     document.deletedAt = new Date();
 
     await this.documentRepository.save(document);
+
+    // Fetch user (or use document.owner if already loaded)
+    const user = await this.userRepository.findOne({
+      where: {
+        id: document.ownerId,
+      },
+    });
+
+    if (user) {
+      await this.documentActivityService.createActivity(
+        user,
+        document,
+        ActivityType.DELETED,
+      );
+    }
 
     return {
       message: 'Moved to trash',

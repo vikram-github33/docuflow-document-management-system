@@ -11,3 +11,9 @@ export async function loginUser(payload:any): Promise<any> {
   const { data } = await apiClient.post<any>(API_ENDPOINTS.LOG_IN_USER, payload);
   return data;
 }
+
+export async function logoutUser(payload:any): Promise<any> {
+  console.log("payload",payload)
+  const { data } = await apiClient.post<any>(API_ENDPOINTS.LOG_OUT_USER, payload);
+  return data;
+}

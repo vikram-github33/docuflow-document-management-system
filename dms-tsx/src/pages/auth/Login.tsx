@@ -12,7 +12,7 @@ import {
   Grid,
   InputAdornment,
   IconButton,
-  Link
+  Link,
 } from "@mui/material";
 import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
 import GoogleIcon from "@mui/icons-material/Google";
@@ -20,18 +20,21 @@ import { loginUser } from "services/auth.service";
 import Visibility from "@mui/icons-material/Visibility";
 import VisibilityOff from "@mui/icons-material/VisibilityOff";
 import { Link as RouterLink } from "react-router-dom";
+import { useAppDispatch } from "../../redux/hooks";
+import { loginSuccess } from "../../redux/slices/authSlice";
 
 interface LoginProps {
   onLogin: () => void;
 }
 
 const Login: React.FC<LoginProps> = ({ onLogin }) => {
-  const [email, setEmail] = useState<string>("admin@company.com");
-  const [password, setPassword] = useState<string>("password");
+  const [email, setEmail] = useState<string>("lalitaPadole@gmail.com");
+  const [password, setPassword] = useState<string>("Vikram@123");
   const [mfa, setMfa] = useState<boolean>(false);
   const [code, setCode] = useState<string>("");
   const [error, setError] = useState<string>("");
   const [showPassword, setShowPassword] = useState(false);
+  const dispatch = useAppDispatch();
   const handleLogin = async () => {
     if (!email.trim() || !password.trim()) {
       setError("Please enter email and password.");
@@ -54,7 +57,13 @@ const Login: React.FC<LoginProps> = ({ onLogin }) => {
 
       // Optional: Save user information
       localStorage.setItem("user", JSON.stringify(res.user));
-
+      dispatch(
+        loginSuccess({
+          user: res.user,
+          accessToken: res.accessToken,
+          refreshToken: res.refreshToken,
+        }),
+      );
       // Login successful
       onLogin();
 
