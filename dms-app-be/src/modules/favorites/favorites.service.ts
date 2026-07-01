@@ -20,19 +20,19 @@ export class FavoritesService {
     private readonly documentActivityService: DocumentActivityService,
   ) {}
 
-  private readonly userId = '6e498a66-b48d-4dea-acb1-dda2104b6606';
+  // private readonly userId = '6e498a66-b48d-4dea-acb1-dda2104b6606';
 
-  async toggle(dto: ToggleFavoriteDto) {
+  async toggle(dto: ToggleFavoriteDto,userId:string) {
     const existing = await this.favoriteRepo.findOne({
       where: {
-        userId: this.userId,
+        userId:userId,
         documentId: dto.documentId,
         folderId: dto.folderId,
       },
     });
     const user = await this.userRepository.findOne({
       where: {
-        id: this.userId,
+        id:userId,
       },
     });
 
@@ -67,7 +67,7 @@ export class FavoritesService {
     }
 
     const favorite = this.favoriteRepo.create({
-      userId: this.userId,
+      userId:userId,
       documentId: dto.documentId,
       folderId: dto.folderId,
     });
@@ -86,10 +86,10 @@ export class FavoritesService {
     };
   }
 
-  async getFavorites() {
+  async getFavorites(userId) {
     return this.favoriteRepo.find({
       where: {
-        userId: this.userId,
+        userId:userId,
       },
       relations: {
         document: true,
@@ -101,10 +101,10 @@ export class FavoritesService {
     });
   }
 
-  async getFavoriteDocuments() {
+  async getFavoriteDocuments(userId:string) {
     return this.favoriteRepo.find({
       where: {
-        userId: this.userId,
+        userId:userId,
       },
       relations: {
         document: true,
@@ -112,10 +112,10 @@ export class FavoritesService {
     });
   }
 
-  async getFavoriteFolders() {
+  async getFavoriteFolders(userId:string) {
     return this.favoriteRepo.find({
       where: {
-        userId: this.userId,
+        userId,
       },
       relations: {
         folder: true,

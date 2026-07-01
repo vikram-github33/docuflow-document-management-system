@@ -521,9 +521,9 @@ export const FolderView: React.FC<FolderViewProps> = ({ folder }) => {
               <DialogTitle>Move to Trash</DialogTitle>
 
               <DialogContent>
-                Are you sure you want to move
+                Are you sure you want to move{" "}
                 <strong>{selectedDoc?.fileName}</strong>
-                to trash?
+                {" "}to trash?
               </DialogContent>
 
               <DialogActions>

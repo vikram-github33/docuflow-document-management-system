@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useEffect } from 'react';
 import { Box, Container, Grid, Paper, Typography } from '@mui/material';
 import CloudUploadIcon from '@mui/icons-material/CloudUpload';
 import { UploadDropZone } from '../components/upload-center/UploadDropZone';
@@ -30,7 +30,9 @@ export const UploadCenterPage: React.FC = () => {
     startPending,
     isProcessing,
   } = useUploadQueue();
-
+useEffect(() => {
+  console.log("UploadCenterPage Mounted");
+}, []);
   const [settings, setSettings] = useState<UploadSettings>(defaultSettings);
   const [toasts, setToasts] = useState<ToastMessage[]>([]);
 

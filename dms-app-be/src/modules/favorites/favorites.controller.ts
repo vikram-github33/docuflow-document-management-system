@@ -3,11 +3,14 @@ import {
   Controller,
   Get,
   Post,
+  Request,
+  UseGuards,
 } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 
 import { FavoritesService } from './favorites.service';
 import { ToggleFavoriteDto } from './toggle-favorite.dto';
+import { JwtAuthGuard } from 'src/jwt/jwt-auth.guard';
 
 @ApiTags('favourites')
 @Controller('favourites')
@@ -17,24 +20,29 @@ export class FavoritesController {
   ) {}
 
   @Post('toggle')
+  @UseGuards(JwtAuthGuard)
   toggle(
     @Body() dto: ToggleFavoriteDto,
+    @Request() req
   ) {
-    return this.favoritesService.toggle(dto);
+    return this.favoritesService.toggle(dto,req.user.id);
   }
 
   @Get()
-  getFavorites() {
-    return this.favoritesService.getFavorites();
+  @UseGuards(JwtAuthGuard)
+  getFavorites(@Request() req) {
+    return this.favoritesService.getFavorites(req.user.id);
   }
 
   @Get('documents')
-  getFavoriteDocuments() {
-    return this.favoritesService.getFavoriteDocuments();
+  @UseGuards(JwtAuthGuard)
+  getFavoriteDocuments(@Request() req) {
+    return this.favoritesService.getFavoriteDocuments(req.user.id);
   }
 
   @Get('folders')
-  getFavoriteFolders() {
-    return this.favoritesService.getFavoriteFolders();
+  @UseGuards(JwtAuthGuard)
+  getFavoriteFolders(@Request() req) {
+    return this.favoritesService.getFavoriteFolders(req.user.id);
   }
 }

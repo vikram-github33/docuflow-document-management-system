@@ -326,7 +326,7 @@ const FavouritesPage: React.FC = () => {
           />
 
           {/* View toggle */}
-          <ToggleButtonGroup
+          {/* <ToggleButtonGroup
             value={viewMode}
             exclusive
             onChange={(_, v) => v && setViewMode(v)}
@@ -335,7 +335,7 @@ const FavouritesPage: React.FC = () => {
           >
             <ToggleButton value="list"><ViewListIcon sx={{ fontSize: 17 }} /></ToggleButton>
             <ToggleButton value="grid"><GridViewIcon sx={{ fontSize: 17 }} /></ToggleButton>
-          </ToggleButtonGroup>
+          </ToggleButtonGroup> */}
 
           <Tooltip title="Refresh">
             <IconButton size="small" onClick={fetchAll} disabled={loading}>

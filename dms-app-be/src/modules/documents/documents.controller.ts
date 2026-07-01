@@ -6,7 +6,9 @@ import {
   Param,
   Post,
   Query,
+  Request,
   UploadedFile,
+  UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
@@ -20,10 +22,12 @@ import {
 } from '@nestjs/swagger';
 import { UploadDocumentDto } from './upload-document.dto';
 import { DocumentsService } from './documents.service';
+import { JwtAuthGuard } from 'src/jwt/jwt-auth.guard';
 @Controller('documents')
 export class DocumentsController {
   constructor(private readonly documentsService: DocumentsService) {}
   @Post('upload') 
+  @UseGuards(JwtAuthGuard)
   @UseInterceptors(FileInterceptor('file'))
   @ApiConsumes('multipart/form-data')
   @ApiBody({
@@ -34,10 +38,16 @@ export class DocumentsController {
     file: Express.Multer.File,
     @Body()
     body: UploadDocumentDto,
+    @Request() req
   ) {
     // console.log('BODY:', body);
     // console.log('FILE:', file);
-    return this.documentsService.upload(file, body);
+    const document =  this.documentsService.upload(file, body,req.user.id);
+     return {
+      success: true,
+      message: 'Document Uploaded successfully.',
+      data: document,
+    };
   }
 
   @Get('search')

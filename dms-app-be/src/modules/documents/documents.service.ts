@@ -25,7 +25,7 @@ export class DocumentsService {
     private readonly aiService: AiService,
     private readonly documentActivityService: DocumentActivityService,
   ) {}
-  async upload(file: Express.Multer.File, body: UploadDocumentDto) {
+  async upload(file: Express.Multer.File, body: UploadDocumentDto,userId:string) {
     // console.log("user",receiveUser)
     const fileKey = `documents/${Date.now()}-${file.originalname}`;
     const uploadResult = await this.awsService.uploadFile(file, fileKey);
@@ -38,11 +38,11 @@ export class DocumentsService {
       ocrStatus: 'processing',
       aiStatus: 'processing',
 
-      ownerId: '6e498a66-b48d-4dea-acb1-dda2104b6606',
+      ownerId:userId,
     });
     const user = await this.userRepository.findOne({
       where: {
-        id: body.ownerId,
+        id:userId,
       },
     });
 

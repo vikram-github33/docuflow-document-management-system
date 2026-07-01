@@ -118,7 +118,7 @@ const Sidebar: React.FC<SidebarProps> = ({ open }) => {
                       primary={item.label}
                       primaryTypographyProps={{ fontSize: '0.8125rem', fontWeight: active ? 500 : 400 }}
                     />
-                    {item.badge && (
+                    {/* {item.badge && (
                       <Box sx={{
                         bgcolor: item.badgeColor === 'warning' ? '#F59E0B' : item.badgeColor === 'error' ? '#EF4444' : 'primary.main',
                         color: '#fff', fontSize: 10, fontWeight: 600,
@@ -126,7 +126,7 @@ const Sidebar: React.FC<SidebarProps> = ({ open }) => {
                       }}>
                         {item.badge}
                       </Box>
-                    )}
+                    )} */}
                   </ListItemButton>
                 );
               })}
