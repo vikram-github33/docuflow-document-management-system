@@ -13,6 +13,7 @@ import {
 import { User } from '../user/user.entity';
 import { Document } from '../documents/documents.entity';
 import { Favorite } from 'src/modules/favorites/favourites.entity';
+import { DocumentActivity } from '../document-activity/documentactivity.entity';
 @Entity('folders')
 export class Folder {
   @PrimaryGeneratedColumn('uuid')
@@ -100,6 +101,9 @@ export class Folder {
 
   @OneToMany(() => Favorite, (favorite) => favorite.folder)
   favorites: Favorite[];
+
+  @OneToMany(() => DocumentActivity, (activity) => activity.folder)
+  activities: DocumentActivity[];
 
   @Column({
     name: 'size_bytes',

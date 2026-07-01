@@ -1,11 +1,22 @@
 import {
-  Controller, Get, Post, Patch, Delete,
-  Body, Param, ParseUUIDPipe, Request,
-  HttpCode, HttpStatus, UseGuards,
+  Controller,
+  Get,
+  Post,
+  Patch,
+  Delete,
+  Body,
+  Param,
+  ParseUUIDPipe,
+  Request,
+  HttpCode,
+  HttpStatus,
+  UseGuards,
 } from '@nestjs/common';
 import { FoldersService } from './folders.service';
 import { CreateFolderDto } from './../../dto/folder/create-folder.dto';
 import { UpdateFolderDto } from './../../dto/folder/update-folder.dto';
+import { AuthGuard } from '@nestjs/passport';
+import { JwtAuthGuard } from 'src/jwt/jwt-auth.guard';
 // import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 
 @Controller('folders')
@@ -14,12 +25,16 @@ export class FoldersController {
   constructor(private readonly foldersService: FoldersService) {}
 
   @Post()
-  @HttpCode(HttpStatus.CREATED)
-  create(@Body() dto: CreateFolderDto, @Request() req: any) {
-    const ownerId = req.user?.id ?? '6e498a66-b48d-4dea-acb1-dda2104b6606';
-    return this.foldersService.createFolder(dto, ownerId);
+  @UseGuards(JwtAuthGuard)
+  create(@Body() dto: CreateFolderDto, @Request() req) {
+    // console.log(req.user);
+    const folder = this.foldersService.createFolder(dto, req.user.id);
+    return {
+      success: true,
+      message: 'Folder created successfully.',
+      data: folder,
+    };
   }
-
   @Get()
   getRootFolders() {
     return this.foldersService.getRootFolders();
@@ -46,7 +61,11 @@ export class FoldersController {
     @Body() dto: UpdateFolderDto,
     @Request() req: any,
   ) {
-    return this.foldersService.updateFolder(id, dto, req.user?.id ?? 'anonymous');
+    return this.foldersService.updateFolder(
+      id,
+      dto,
+      req.user?.id ?? 'anonymous',
+    );
   }
 
   @Delete(':id')

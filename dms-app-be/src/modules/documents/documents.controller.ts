@@ -23,7 +23,7 @@ import { DocumentsService } from './documents.service';
 @Controller('documents')
 export class DocumentsController {
   constructor(private readonly documentsService: DocumentsService) {}
-  @Post('upload')
+  @Post('upload') 
   @UseInterceptors(FileInterceptor('file'))
   @ApiConsumes('multipart/form-data')
   @ApiBody({

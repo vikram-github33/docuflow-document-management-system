@@ -1,8 +1,8 @@
 import React from 'react';
 import { Box, Paper, Typography, Avatar, Skeleton } from '@mui/material';
 import TimelineIcon from '@mui/icons-material/Timeline';
-import type { ActivityItem } from '../../types/dashboard.types';
-import { timeAgo, getActivityIcon, truncate } from '../../utils/dashboard.utils';
+import type { ActivityItem } from '../../types/activity.types';
+import { getActivityMeta, timeAgo, getUserColor, getInitials } from '../../utils/activity.utils';
 
 interface ActivityFeedProps {
   items:   ActivityItem[];
@@ -40,9 +40,15 @@ export const ActivityFeed: React.FC<ActivityFeedProps> = ({ items, loading }) =>
       )}
 
       {!loading && items.map((item, idx) => {
-        const act  = getActivityIcon(item.type);
-        const name = item.fileName ?? item.folderName ?? '';
+        // ── Fixed: use real ActivityItem shape ──────────────────────────────
+        const act    = getActivityMeta(item.activityType);                 // not item.type
+        const name   = item.document?.fileName ?? item.folder?.name ?? ''; // not item.fileName / item.folderName
         const isLast = idx === items.length - 1;
+
+        const userName     = `${item.user.firstName} ${item.user.lastName}`; // not item.userName
+        const userInitials = getInitials(item.user.firstName, item.user.lastName); // not item.userInitials
+        const userColor    = getUserColor(item.user.id);
+        const timestamp    = item.createdAt; // not item.timestamp
 
         return (
           <Box
@@ -55,32 +61,32 @@ export const ActivityFeed: React.FC<ActivityFeedProps> = ({ items, loading }) =>
             {/* User avatar */}
             <Avatar sx={{
               width: 30, height: 30, fontSize: 11, fontWeight: 600,
-              bgcolor: '#E6F1FB', color: '#1976d2', flexShrink: 0,
+              bgcolor: userColor, color: '#fff', flexShrink: 0,
             }}>
-              {item.userInitials}
+              {userInitials}
             </Avatar>
 
             {/* Content */}
             <Box sx={{ flex: 1, minWidth: 0 }}>
               <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.75, flexWrap: 'wrap' }}>
                 <Typography sx={{ fontSize: 12, color: 'text.primary', fontWeight: 500 }}>
-                  {item.userName}
+                  {userName}
                 </Typography>
                 <Box sx={{
                   fontSize: 11, px: 0.75, py: '1px',
-                  borderRadius: 1, bgcolor: `${act.color}15`,
+                  borderRadius: 1, bgcolor: act.bg,
                   color: act.color, fontWeight: 500,
                 }}>
                   {act.label}
                 </Box>
                 {name && (
                   <Typography sx={{ fontSize: 12, color: 'text.secondary' }} noWrap>
-                    {truncate(name, 28)}
+                    {name}
                   </Typography>
                 )}
               </Box>
               <Typography variant="caption" color="text.disabled" sx={{ fontSize: 10 }}>
-                {timeAgo(item.timestamp)}
+                {timeAgo(timestamp)}
               </Typography>
             </Box>
           </Box>

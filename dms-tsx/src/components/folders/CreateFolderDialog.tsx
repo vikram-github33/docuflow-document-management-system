@@ -1,21 +1,36 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from "react";
 import {
-  Dialog, DialogTitle, DialogContent, DialogActions,
-  TextField, Button, Box, Typography, MenuItem,
-  Tooltip, CircularProgress, Alert, Divider,
-} from '@mui/material';
-import CreateNewFolderIcon from '@mui/icons-material/CreateNewFolder';
-import { useCreateFolder } from '../../hooks/useFolderHooks';
-import { DynamicFolderIcon } from './FolderIcon';
-import { FOLDER_COLORS, FOLDER_ICONS } from '../../types/folder.types';
-import type { FolderTreeNode, CreateFolderPayload } from '../../types/folder.types';
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  TextField,
+  Button,
+  Box,
+  Typography,
+  MenuItem,
+  Tooltip,
+  CircularProgress,
+  Alert,
+  Divider,
+} from "@mui/material";
+import CreateNewFolderIcon from "@mui/icons-material/CreateNewFolder";
+import { useCreateFolder } from "../../hooks/useFolderHooks";
+import { DynamicFolderIcon } from "./FolderIcon";
+import { FOLDER_COLORS, FOLDER_ICONS } from "../../types/folder.types";
+import type {
+  FolderTreeNode,
+  CreateFolderPayload,
+} from "../../types/folder.types";
+import { ToastMessage, UploadToastStack } from "components/upload-center/UploadToastStack";
 
 interface CreateFolderDialogProps {
   open: boolean;
   onClose: () => void;
-  onSuccess: () => void;           // caller increments refreshTrigger
+  onSuccess: () => void; // caller increments refreshTrigger
   parentFolder?: FolderTreeNode | null;
-  allFolders:any;
+  allFolders: any;
+  pushToast: (message: string, severity?: ToastMessage["severity"]) => void;
 }
 
 interface FormState {
@@ -26,45 +41,65 @@ interface FormState {
   icon: string;
 }
 
-interface FormErrors { name?: string }
+interface FormErrors {
+  name?: string;
+}
 
 const DEFAULT_FORM: FormState = {
-  name: '', description: '', parentId: '', color: '#1976d2', icon: 'folder',
+  name: "",
+  description: "",
+  parentId: "",
+  color: "#1976d2",
+  icon: "folder",
 };
 
 // Flatten tree into a flat list for the parent selector dropdown
-function flattenTree(nodes: FolderTreeNode[], depth = 0): { id: string; label: string }[] {
+function flattenTree(
+  nodes: FolderTreeNode[],
+  depth = 0,
+): { id: string; label: string }[] {
   const result: { id: string; label: string }[] = [];
   for (const n of nodes) {
-    result.push({ id: n.id, label: `${'  '.repeat(depth)}${n.name}` });
+    result.push({ id: n.id, label: `${"  ".repeat(depth)}${n.name}` });
     result.push(...flattenTree(n.children, depth + 1));
   }
   return result;
 }
 
 export const CreateFolderDialog: React.FC<CreateFolderDialogProps> = ({
-  open, onClose, onSuccess, parentFolder, allFolders,
+  open,
+  onClose,
+  onSuccess,
+  parentFolder,
+  allFolders,
+  pushToast
 }) => {
   const [form, setForm] = useState<FormState>({ ...DEFAULT_FORM });
   const [errors, setErrors] = useState<FormErrors>({});
-  const { createFolder, loading, error: apiError, clearError } = useCreateFolder();
+  // const [toasts, setToasts] = useState<ToastMessage[]>([]);
+  const {
+    createFolder,
+    loading,
+    error: apiError,
+    clearError,
+  } = useCreateFolder();
   // Reset form when dialog opens
   useEffect(() => {
     if (open) {
-      setForm({ ...DEFAULT_FORM, parentId: parentFolder?.id ?? '' });
+      setForm({ ...DEFAULT_FORM, parentId: parentFolder?.id ?? "" });
       setErrors({});
       clearError();
     }
   }, [open, parentFolder?.id]);
-
-  const update = (patch: Partial<FormState>) => setForm((f) => ({ ...f, ...patch }));
+  const update = (patch: Partial<FormState>) =>
+    setForm((f) => ({ ...f, ...patch }));
 
   function validate(): boolean {
     const errs: FormErrors = {};
     if (!form.name.trim()) {
-      errs.name = 'Folder name is required';
+      errs.name = "Folder name is required";
     } else if (form.name.trim().length > 255) {
-      errs.name = 'Folder name must not exceed 255 characters';
+      errs.name = "Folder name must not exceed 255 characters";
     }
     setErrors(errs);
     return Object.keys(errs).length === 0;
@@ -81,18 +116,35 @@ export const CreateFolderDialog: React.FC<CreateFolderDialogProps> = ({
       color: form.color,
       icon: form.icon,
     };
+    try {
+      const result: any = await createFolder(payload);
+      if (result?.success) {
+        if (result.success) {
+          pushToast(
+            result.message || "Folder created successfully.",
+            "success",
+          );
 
-    const result = await createFolder(payload);
-    if (result) {
-      onSuccess();
-      onClose();
+          onSuccess();
+          onClose();
+        }
+      }
+    } catch (error:any) {
+      console.log("error", error);
+      pushToast(
+        error.response?.data?.message || "Failed to create folder.",
+        "error",
+      );
     }
   }
 
   const flatFolders = flattenTree(allFolders);
 
   // Live path preview
-  const parentNode = (function findNode(nodes: FolderTreeNode[], id: string): FolderTreeNode | null {
+  const parentNode = (function findNode(
+    nodes: FolderTreeNode[],
+    id: string,
+  ): FolderTreeNode | null {
     for (const n of nodes) {
       if (n.id === id) return n;
       const found = findNode(n.children, id);
@@ -105,11 +157,11 @@ export const CreateFolderDialog: React.FC<CreateFolderDialogProps> = ({
     ? form.parentId && parentNode
       ? `${parentNode.path}/${form.name.trim()}`
       : `/${form.name.trim()}`
-    : '';
+    : "";
 
   return (
     <Dialog open={open} onClose={onClose} maxWidth="sm" fullWidth>
-      <DialogTitle sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+      <DialogTitle sx={{ display: "flex", alignItems: "center", gap: 1 }}>
         <CreateNewFolderIcon color="primary" />
         Create Folder
       </DialogTitle>
@@ -121,18 +173,23 @@ export const CreateFolderDialog: React.FC<CreateFolderDialogProps> = ({
           </Alert>
         )}
 
-        <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2.5 }}>
+        <Box sx={{ display: "flex", flexDirection: "column", gap: 2.5 }}>
           {/* Name */}
           <TextField
             label="Folder Name *"
             value={form.name}
-            onChange={(e) => { update({ name: e.target.value }); if (errors.name) setErrors({}); }}
+            onChange={(e) => {
+              update({ name: e.target.value });
+              if (errors.name) setErrors({});
+            }}
             error={!!errors.name}
             helperText={errors.name ?? `${form.name.length}/255`}
             fullWidth
             autoFocus
             inputProps={{ maxLength: 255 }}
-            onKeyDown={(e) => { if (e.key === 'Enter') handleSubmit(); }}
+            onKeyDown={(e) => {
+              if (e.key === "Enter") handleSubmit();
+            }}
           />
 
           {/* Description */}
@@ -159,7 +216,11 @@ export const CreateFolderDialog: React.FC<CreateFolderDialogProps> = ({
           >
             <MenuItem value="">— Root (no parent) —</MenuItem>
             {flatFolders.map((f) => (
-              <MenuItem key={f.id} value={f.id} sx={{ fontFamily: 'monospace', whiteSpace: 'pre' }}>
+              <MenuItem
+                key={f.id}
+                value={f.id}
+                sx={{ fontFamily: "monospace", whiteSpace: "pre" }}
+              >
                 {f.label}
               </MenuItem>
             ))}
@@ -167,11 +228,19 @@ export const CreateFolderDialog: React.FC<CreateFolderDialogProps> = ({
 
           {/* Path preview */}
           {previewPath && (
-            <Box sx={{ p: 1.5, bgcolor: 'grey.100', borderRadius: 1 }}>
-              <Typography variant="caption" color="text.secondary" display="block">
+            <Box sx={{ p: 1.5, bgcolor: "grey.100", borderRadius: 1 }}>
+              <Typography
+                variant="caption"
+                color="text.secondary"
+                display="block"
+              >
                 Path preview
               </Typography>
-              <Typography variant="body2" fontFamily="monospace" color="primary.main">
+              <Typography
+                variant="body2"
+                fontFamily="monospace"
+                color="primary.main"
+              >
                 {previewPath}
               </Typography>
             </Box>
@@ -181,19 +250,30 @@ export const CreateFolderDialog: React.FC<CreateFolderDialogProps> = ({
 
           {/* Color picker */}
           <Box>
-            <Typography variant="body2" fontWeight={500} gutterBottom>Color</Typography>
-            <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap' }}>
+            <Typography variant="body2" fontWeight={500} gutterBottom>
+              Color
+            </Typography>
+            <Box sx={{ display: "flex", gap: 1, flexWrap: "wrap" }}>
               {FOLDER_COLORS.map((c) => (
                 <Tooltip key={c.value} title={c.label}>
                   <Box
                     onClick={() => update({ color: c.value })}
                     sx={{
-                      width: 28, height: 28, borderRadius: '50%', bgcolor: c.value,
-                      cursor: 'pointer',
-                      border: form.color === c.value ? '3px solid #000' : '2px solid transparent',
-                      outline: form.color === c.value ? `2px solid ${c.value}` : 'none',
-                      transition: 'transform 0.1s',
-                      '&:hover': { transform: 'scale(1.15)' },
+                      width: 28,
+                      height: 28,
+                      borderRadius: "50%",
+                      bgcolor: c.value,
+                      cursor: "pointer",
+                      border:
+                        form.color === c.value
+                          ? "3px solid #000"
+                          : "2px solid transparent",
+                      outline:
+                        form.color === c.value
+                          ? `2px solid ${c.value}`
+                          : "none",
+                      transition: "transform 0.1s",
+                      "&:hover": { transform: "scale(1.15)" },
                     }}
                   />
                 </Tooltip>
@@ -203,25 +283,36 @@ export const CreateFolderDialog: React.FC<CreateFolderDialogProps> = ({
 
           {/* Icon selector */}
           <Box>
-            <Typography variant="body2" fontWeight={500} gutterBottom>Icon</Typography>
-            <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap' }}>
+            <Typography variant="body2" fontWeight={500} gutterBottom>
+              Icon
+            </Typography>
+            <Box sx={{ display: "flex", gap: 1, flexWrap: "wrap" }}>
               {FOLDER_ICONS.map((ic) => (
                 <Tooltip key={ic.value} title={ic.label}>
                   <Box
                     onClick={() => update({ icon: ic.value })}
                     sx={{
-                      width: 40, height: 40, borderRadius: 1.5,
-                      display: 'flex', alignItems: 'center', justifyContent: 'center',
-                      cursor: 'pointer', border: '1.5px solid',
-                      borderColor: form.icon === ic.value ? form.color : 'divider',
-                      bgcolor: form.icon === ic.value ? `${form.color}18` : 'transparent',
-                      transition: 'all 0.15s',
-                      '&:hover': { borderColor: form.color },
+                      width: 40,
+                      height: 40,
+                      borderRadius: 1.5,
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      cursor: "pointer",
+                      border: "1.5px solid",
+                      borderColor:
+                        form.icon === ic.value ? form.color : "divider",
+                      bgcolor:
+                        form.icon === ic.value
+                          ? `${form.color}18`
+                          : "transparent",
+                      transition: "all 0.15s",
+                      "&:hover": { borderColor: form.color },
                     }}
                   >
                     <DynamicFolderIcon
                       icon={ic.value}
-                      color={form.icon === ic.value ? form.color : '#9e9e9e'}
+                      color={form.icon === ic.value ? form.color : "#9e9e9e"}
                     />
                   </Box>
                 </Tooltip>
@@ -232,18 +323,29 @@ export const CreateFolderDialog: React.FC<CreateFolderDialogProps> = ({
           {/* Live preview */}
           <Box
             sx={{
-              display: 'flex', alignItems: 'center', gap: 1.5,
-              p: 1.5, border: '1px solid', borderColor: 'divider',
-              borderRadius: 2, bgcolor: 'background.paper',
+              display: "flex",
+              alignItems: "center",
+              gap: 1.5,
+              p: 1.5,
+              border: "1px solid",
+              borderColor: "divider",
+              borderRadius: 2,
+              bgcolor: "background.paper",
             }}
           >
-            <DynamicFolderIcon icon={form.icon} color={form.color} sx={{ fontSize: 32 }} />
+            <DynamicFolderIcon
+              icon={form.icon}
+              color={form.color}
+              sx={{ fontSize: 32 }}
+            />
             <Box>
               <Typography variant="body1" fontWeight={500}>
-                {form.name || 'Folder Name'}
+                {form.name || "Folder Name"}
               </Typography>
               {form.description && (
-                <Typography variant="caption" color="text.secondary">{form.description}</Typography>
+                <Typography variant="caption" color="text.secondary">
+                  {form.description}
+                </Typography>
               )}
             </Box>
           </Box>
@@ -251,15 +353,23 @@ export const CreateFolderDialog: React.FC<CreateFolderDialogProps> = ({
       </DialogContent>
 
       <DialogActions sx={{ px: 3, py: 2 }}>
-        <Button onClick={onClose} disabled={loading}>Cancel</Button>
+        <Button onClick={onClose} disabled={loading}>
+          Cancel
+        </Button>
         <Button
           variant="contained"
           onClick={handleSubmit}
           disabled={loading}
-          startIcon={loading ? <CircularProgress size={16} color="inherit" /> : <CreateNewFolderIcon />}
+          startIcon={
+            loading ? (
+              <CircularProgress size={16} color="inherit" />
+            ) : (
+              <CreateNewFolderIcon />
+            )
+          }
           disableElevation
         >
-          {loading ? 'Creating...' : 'Create Folder'}
+          {loading ? "Creating..." : "Create Folder"}
         </Button>
       </DialogActions>
     </Dialog>

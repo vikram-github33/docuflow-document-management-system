@@ -47,7 +47,10 @@ export class Document {
   })
   tags?: string[];
 
-  @Column({ name: 'file_type', length: 50 })
+  @Column({
+    name: 'file_type',
+    type: 'text',
+  })
   fileType: string;
 
   @Column({ length: 20, nullable: true })

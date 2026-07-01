@@ -6,9 +6,11 @@ import { FoldersController } from './folders.controller';
 import { Document } from '../documents/documents.entity';
 import { Favorite } from 'src/modules/favorites/favourites.entity';
 import { User } from '../user/user.entity';
+import { DocumentActivityService } from '../document-activity/document-activity.service';
+import { DocumentActivityModule } from '../document-activity/document-activity.module';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Folder,Document,Favorite,User]),],
+  imports: [TypeOrmModule.forFeature([Folder,Document,Favorite,User]),DocumentActivityModule],
   controllers: [FoldersController],
   providers: [FoldersService],
   exports: [FoldersService],

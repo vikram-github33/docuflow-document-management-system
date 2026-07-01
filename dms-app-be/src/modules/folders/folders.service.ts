@@ -12,6 +12,9 @@ import { CreateFolderDto } from '././../../dto/folder/create-folder.dto';
 import { UpdateFolderDto } from '././../../dto/folder/update-folder.dto';
 import { FolderTreeNodeDto } from './../../dto/folder/folder-response.dto';
 import { Document } from '../documents/documents.entity';
+import { DocumentActivityService } from '../document-activity/document-activity.service';
+import { ActivityType } from 'src/enum/activity.enum';
+import { User } from '../user/user.entity';
 
 @Injectable()
 export class FoldersService {
@@ -20,7 +23,10 @@ export class FoldersService {
     private readonly folderRepo: Repository<Folder>,
     @InjectRepository(Document)
     private readonly documentRepository: Repository<Document>,
+    @InjectRepository(User)
+    private readonly userRepository: Repository<User>,
     private readonly dataSource: DataSource,
+    private readonly documentActivityService: DocumentActivityService,
   ) {}
 
   private sanitizeSegment(name: string): string {
@@ -122,7 +128,22 @@ export class FoldersService {
         sizeBytes: '0',
       });
 
-      return repo.save(folder);
+      const savedFolder = await repo.save(folder);
+      const user = await this.userRepository.findOne({
+        where: {
+          id: ownerId,
+        },
+      });
+      if (!user) {
+        throw new NotFoundException('User not found');
+      }
+      await this.documentActivityService.createFolderActivity(
+        manager,
+        user!,
+        savedFolder,
+        ActivityType.CREATED,
+      );
+      return savedFolder;
     });
   }
 
@@ -204,7 +225,7 @@ export class FoldersService {
           fileName: doc.fileName,
           fileUrl: doc.fileUrl,
           fileType: doc.fileType,
-          favorites:doc.favorites
+          favorites: doc.favorites,
         });
       }
     }

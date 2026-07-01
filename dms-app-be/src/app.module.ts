@@ -12,6 +12,8 @@ import { AIModule } from './modules/ai/ai.module';
 import { FavoritesModule } from './modules/favorites/favorites.module';
 import { ScheduleModule } from '@nestjs/schedule';
 import { AuthModule } from './modules/auth/auth.module';
+import { DashboardModule } from './modules/dashboard/dashboard.module';
+import { JwtStrategy } from './modules/auth/jwt.strategy';
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -35,7 +37,8 @@ import { AuthModule } from './modules/auth/auth.module';
     StorageModule,
     AIModule,
     FavoritesModule,
-    AuthModule
+    AuthModule,
+    DashboardModule
   ],
   controllers: [AppController],
   providers: [AppService],

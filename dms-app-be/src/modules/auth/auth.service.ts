@@ -17,6 +17,7 @@ import { LoginDto } from '../../dto/login.dto';
 import { RefreshToken } from './refresh-token/refresh-token.entity';
 import { JwtService } from '@nestjs/jwt';
 import { RefreshTokenDto } from '../../dto/refresh-token.dto';
+import { ConfigService } from '@nestjs/config';
 @Injectable()
 export class AuthService {
   constructor(
@@ -26,7 +27,13 @@ export class AuthService {
     private readonly refreshTokenRepository: Repository<RefreshToken>,
 
     private readonly jwtService: JwtService,
-  ) {}
+    private readonly configService: ConfigService,
+  ) {
+       console.log(
+    'JWT_SECRET:',
+    this.configService.get('JWT_SECRET'),
+  );
+  }
 
   async register(registerDto: RegisterDto) {
     const {

@@ -49,7 +49,9 @@ export const UserProfilePopover = () => {
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
   const open = Boolean(anchorEl);
-  const { user, isAuthenticated } = useAppSelector((state: any) => state.auth);
+  // const { user, isAuthenticated } = useAppSelector((state: any) => state.auth);
+  let user:any = JSON.parse(localStorage.getItem('user') || '{}');
+  console.log("user", user?.id);
   console.log("user", user);
   const initials = getInitials(user?.firstName, user?.lastName);
   const avatarColor = user?.avatarColor ?? "#1976d2";

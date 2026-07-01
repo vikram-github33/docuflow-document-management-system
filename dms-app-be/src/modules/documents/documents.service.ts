@@ -26,6 +26,7 @@ export class DocumentsService {
     private readonly documentActivityService: DocumentActivityService,
   ) {}
   async upload(file: Express.Multer.File, body: UploadDocumentDto) {
+    // console.log("user",receiveUser)
     const fileKey = `documents/${Date.now()}-${file.originalname}`;
     const uploadResult = await this.awsService.uploadFile(file, fileKey);
 
@@ -206,7 +207,7 @@ export class DocumentsService {
       await this.documentActivityService.createActivity(
         user,
         document,
-        ActivityType.DELETED,
+        ActivityType.MOVED_TO_TRASH,
       );
     }
 
@@ -231,6 +232,9 @@ export class DocumentsService {
     const document = await this.documentRepository.findOne({
       where: { id },
       withDeleted: true,
+      relations: {
+        owner: true,
+      },
     });
 
     if (!document) {
@@ -240,6 +244,13 @@ export class DocumentsService {
     document.deletedAt = null;
 
     await this.documentRepository.save(document);
+    if (document.owner) {
+      await this.documentActivityService.createActivity(
+        document.owner,
+        document,
+        ActivityType.RESTORED,
+      );
+    }
 
     return {
       message: 'Document restored successfully',
@@ -250,12 +261,22 @@ export class DocumentsService {
     const document = await this.documentRepository.findOne({
       where: { id },
       withDeleted: true,
+      relations: {
+        owner: true,
+      },
     });
 
     if (!document) {
       throw new NotFoundException('Document not found');
     }
-
+    // // Create activity BEFORE deleting
+    // if (document.owner) {
+    //   await this.documentActivityService.createActivity(
+    //     document.owner,
+    //     document,
+    //     ActivityType.PERMANENTLY_DELETED,
+    //   );
+    // }
     // Delete from S3
     await this.awsService.deleteFile(document.fileUrl);
 

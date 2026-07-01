@@ -14,36 +14,35 @@ export interface JwtPayload {
 }
 
 @Injectable()
-export class JwtStrategy extends PassportStrategy(Strategy) {
+export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
   constructor(
     @InjectRepository(User)
     private readonly userRepository: Repository<User>,
-
     private readonly configService: ConfigService,
   ) {
+    console.log('JWT Secret:', configService.get('JWT_SECRET'));
+
     super({
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
-
       ignoreExpiration: false,
-
       secretOrKey:
         configService.get<string>('JWT_SECRET') || 'super-secret-key',
     });
   }
 
   async validate(payload: JwtPayload) {
+    console.log('Payload:', payload);
+
     const user = await this.userRepository.findOne({
-      where: {
-        id: payload.sub,
-      },
+      where: { id: payload.sub },
     });
+
+    console.log('User:', user);
 
     if (!user || !user.isActive) {
       throw new UnauthorizedException('Invalid token');
     }
 
-    const { passwordHash, ...userData } = user;
-
-    return userData;
+    return user;
   }
 }

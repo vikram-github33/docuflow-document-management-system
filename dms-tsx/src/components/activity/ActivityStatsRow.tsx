@@ -1,12 +1,12 @@
 import React from 'react';
 import { Box, Paper, Typography, Skeleton } from '@mui/material';
-import CloudUploadIcon   from '@mui/icons-material/CloudUpload';
-import CloudDownloadIcon from '@mui/icons-material/CloudDownload';
-import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
-import ShareIcon         from '@mui/icons-material/Share';
-import StarIcon          from '@mui/icons-material/Star';
+import CloudUploadIcon     from '@mui/icons-material/CloudUpload';
+import CloudDownloadIcon   from '@mui/icons-material/CloudDownload';
+import DeleteOutlineIcon   from '@mui/icons-material/DeleteOutline';
+import ShareIcon           from '@mui/icons-material/Share';
+import StarIcon            from '@mui/icons-material/Star';
 import CreateNewFolderIcon from '@mui/icons-material/CreateNewFolder';
-import type { ActivityItem } from '../../types/activity.types';
+import { ActivityType } from '../../types/activity.types';
 
 interface StatProps { label: string; value: number; icon: React.ReactNode; bg: string; color: string; loading: boolean }
 
@@ -21,13 +21,10 @@ function StatCard({ label, value, icon, bg, color, loading }: StatProps) {
           </Typography>
           {loading
             ? <Skeleton width={40} height={32} />
-            : <Typography sx={{ fontSize: 26, fontWeight: 600, lineHeight: 1.1, color: 'text.primary' }}>
-                {value}
-              </Typography>
+            : <Typography sx={{ fontSize: 26, fontWeight: 600, lineHeight: 1.1 }}>{value}</Typography>
           }
         </Box>
-        <Box sx={{ width: 36, height: 36, borderRadius: 2, bgcolor: bg,
-          display: 'flex', alignItems: 'center', justifyContent: 'center', color }}>
+        <Box sx={{ width: 36, height: 36, borderRadius: 2, bgcolor: bg, display: 'flex', alignItems: 'center', justifyContent: 'center', color }}>
           {icon}
         </Box>
       </Box>
@@ -35,18 +32,21 @@ function StatCard({ label, value, icon, bg, color, loading }: StatProps) {
   );
 }
 
-interface Props { items: ActivityItem[]; loading: boolean }
+interface Props {
+  summary: Record<string, number>;
+  loading: boolean;
+}
 
-export const ActivityStatsRow: React.FC<Props> = ({ items, loading }) => {
-  const count = (type: string) => items.filter(i => i.type === type).length;
+export const ActivityStatsRow: React.FC<Props> = ({ summary, loading }) => {
+  const get = (t: ActivityType) => summary[t] ?? 0;
 
   const stats = [
-    { label: 'Uploads',    value: count('upload'),        icon: <CloudUploadIcon sx={{ fontSize: 18 }} />,    bg: '#E6F1FB', color: '#1976d2' },
-    { label: 'Downloads',  value: count('download'),      icon: <CloudDownloadIcon sx={{ fontSize: 18 }} />,  bg: '#E1F5FE', color: '#0288d1' },
-    { label: 'Deletes',    value: count('delete'),        icon: <DeleteOutlineIcon sx={{ fontSize: 18 }} />,  bg: '#FEEBEB', color: '#e53935' },
-    { label: 'Shares',     value: count('share'),         icon: <ShareIcon sx={{ fontSize: 18 }} />,          bg: '#F3E8FF', color: '#7b1fa2' },
-    { label: 'Starred',    value: count('favourite'),     icon: <StarIcon sx={{ fontSize: 18 }} />,            bg: '#FFF9E6', color: '#F9A825' },
-    { label: 'Folders',    value: count('create_folder'), icon: <CreateNewFolderIcon sx={{ fontSize: 18 }} />, bg: '#EAF3DE', color: '#2e7d32' },
+    { label: 'Uploads',   value: get(ActivityType.UPLOADED),   icon: <CloudUploadIcon sx={{ fontSize: 18 }} />,    bg: '#E6F1FB', color: '#1976d2' },
+    { label: 'Downloads', value: get(ActivityType.DOWNLOADED), icon: <CloudDownloadIcon sx={{ fontSize: 18 }} />,  bg: '#E1F5FE', color: '#0288d1' },
+    { label: 'Deletes',   value: get(ActivityType.DELETED) + get(ActivityType.PERMANENTLY_DELETED), icon: <DeleteOutlineIcon sx={{ fontSize: 18 }} />, bg: '#FEEBEB', color: '#e53935' },
+    { label: 'Shares',    value: get(ActivityType.SHARED),     icon: <ShareIcon sx={{ fontSize: 18 }} />,          bg: '#F3E8FF', color: '#7b1fa2' },
+    { label: 'Starred',   value: get(ActivityType.FAVORITED),  icon: <StarIcon sx={{ fontSize: 18 }} />,           bg: '#FFF9E6', color: '#F9A825' },
+    { label: 'Folders',   value: get(ActivityType.CREATED),    icon: <CreateNewFolderIcon sx={{ fontSize: 18 }} />, bg: '#EAF3DE', color: '#2e7d32' },
   ];
 
   return (
