@@ -4,18 +4,7 @@ import type {
   ActivitySummaryResponse,
   ActivityType,
 } from '../types/activity.types';
-
-const api = axios.create({
-  baseURL: process.env.REACT_APP_API_BASE_URL ?? 'http://localhost:7200',
-  headers: { 'Content-Type': 'application/json' },
-});
-
-api.interceptors.request.use((config) => {
-  const token = localStorage.getItem('authToken');
-  if (token && config.headers) config.headers.Authorization = `Bearer ${token}`;
-  return config;
-});
-
+import apiClient from 'config/axios.config';
 export interface GetActivitiesParams {
   page?:         number;
   limit?:        number;
@@ -29,13 +18,13 @@ export interface GetActivitiesParams {
 export const activityService = {
   /** GET /document-activity */
   async getActivities(params: GetActivitiesParams = {}): Promise<ActivityListResponse> {
-    const { data } = await api.get<ActivityListResponse>('/document-activity', { params });
+    const { data } = await apiClient.get<ActivityListResponse>('/document-activity', { params });
     return data;
   },
 
   /** GET /document-activity/summary */
   async getSummary(dateFrom?: string): Promise<ActivitySummaryResponse> {
-    const { data } = await api.get<ActivitySummaryResponse>('/document-activity/summary', {
+    const { data } = await apiClient.get<ActivitySummaryResponse>('/document-activity/summary', {
       params: dateFrom ? { dateFrom } : {},
     });
     return data;

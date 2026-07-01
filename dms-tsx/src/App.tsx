@@ -60,6 +60,7 @@ function App() {
                 <Route path="/search" element={<Search />} />
                 <Route path="/trash" element={<TrashPage />} />
                 <Route path="/favorites" element={<FavouritesPage />} />
+                <Route path="/coming-soon" element={<ComingSoon />} />
                 <Route path="/recent-activity" element={<RecentActivityPage/>} />
                 <Route
                   path="*"

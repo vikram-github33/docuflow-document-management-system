@@ -4,7 +4,9 @@ import axios, {
 } from "axios";
 
 const BASE_URL =
-  process.env.VITE_API_URL ?? "http://localhost:7200";
+  process.env.REACT_APP_API_URL 
+
+  console.log("BASE_URL",BASE_URL)
 
 const TIMEOUT_MS = 30000;
 
