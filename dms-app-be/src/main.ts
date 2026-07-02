@@ -1,11 +1,14 @@
-import { NestFactory } from "@nestjs/core";
-import { AppModule } from "./app.module";
-import { ValidationPipe } from "@nestjs/common";
+import { NestFactory } from '@nestjs/core';
+import { AppModule } from './app.module';
+import { ValidationPipe } from '@nestjs/common';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
-  app.enableCors();
+  app.enableCors({
+    origin: ['http://localhost:3000', 'https://your-frontend.vercel.app'],
+    credentials: true,
+  });
 
   app.useGlobalPipes(
     new ValidationPipe({
@@ -22,7 +25,7 @@ async function bootstrap() {
     .build();
   const document = SwaggerModule.createDocument(app, options, {
     ignoreGlobalPrefix: false,
-  },);
+  });
   SwaggerModule.setup('api', app, document);
 
   // app.use(helmet());
@@ -30,6 +33,6 @@ async function bootstrap() {
 
   // app.setGlobalPrefix('api');
   console.log(`Server is running on port ${process.env.PORT || 3001}`);
-  await app.listen(process.env.PORT || 3001);
+  await app.listen(process.env.PORT || 3001, '0.0.0.0');
 }
 bootstrap();
