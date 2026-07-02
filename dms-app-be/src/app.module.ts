@@ -30,6 +30,10 @@ import { JwtStrategy } from './modules/auth/jwt.strategy';
 
       autoLoadEntities: true,
       synchronize: process.env.NODE_ENV !== "production",
+       ssl:
+    process.env.NODE_ENV === 'production'
+      ? { rejectUnauthorized: false }
+      : false,
     }),
     UserModule,
     DocumentsModule,
