@@ -29,7 +29,7 @@ import { JwtStrategy } from './modules/auth/jwt.strategy';
       database: process.env.DB_NAME,
 
       autoLoadEntities: true,
-      synchronize: process.env.NODE_ENV !== "production",
+      synchronize:true,
        ssl:
     process.env.NODE_ENV === 'production'
       ? { rejectUnauthorized: false }
