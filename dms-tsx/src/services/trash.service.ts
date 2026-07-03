@@ -1,9 +1,10 @@
 import axios from 'axios';
 import type { TrashedDocument, TrashedFolder } from '../types/trash.types';
-console.log("process.env.REACT_APP_API_URL",process.env.VITE_API_URL)
+// console.log("process.env.REACT_APP_API_URL",process.env.VITE_API_URL)
+const BASE_URL =
+  process.env.REACT_APP_API_URL 
 const api = axios.create({
-  // baseURL: process.env.REACT_APP_API_URL ?? 'http://localhost:3000',
-  baseURL:'http://localhost:7200',
+  baseURL:`${BASE_URL}`,
   headers: { 'Content-Type': 'application/json' },
 });
 

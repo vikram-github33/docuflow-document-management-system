@@ -5,11 +5,15 @@ import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
-  app.enableCors({
-    origin: ['http://localhost:3000', 'https://your-frontend.vercel.app'],
-    credentials: true,
-  });
-
+ app.enableCors({
+  origin: [
+    "http://localhost:3000",
+    "https://docuflow-document-management-system.vercel.app",
+  ],
+  methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
+  allowedHeaders: ["Content-Type", "Authorization"],
+  credentials: true,
+});
   app.useGlobalPipes(
     new ValidationPipe({
       whitelist: true,
