@@ -7,7 +7,7 @@ import { GeminiProvider } from './gemini.provider';
 @Module({
   imports: [],
   controllers: [AiController],
-  providers: [AiService, OllamaProvider, GeminiProvider],
+  providers: [AiService, OllamaProvider],
    exports: [AiService],
 })
 export class AIModule {}

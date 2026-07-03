@@ -39,7 +39,6 @@ import { JwtStrategy } from './modules/auth/jwt.strategy';
     DocumentsModule,
     FoldersModule,
     StorageModule,
-    AIModule,
     FavoritesModule,
     AuthModule,
     DashboardModule
