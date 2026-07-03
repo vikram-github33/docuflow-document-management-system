@@ -47,4 +47,8 @@ import { JwtStrategy } from './modules/auth/jwt.strategy';
   controllers: [AppController],
   providers: [AppService],
 })
-export class AppModule {}
+export class AppModule {
+  constructor(){
+    console.log("NODE_ENV =", process.env.NODE_ENV);
+  }
+}
