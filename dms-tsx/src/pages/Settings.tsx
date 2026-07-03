@@ -26,7 +26,7 @@ const Settings: React.FC = () => {
   return (
     <Box>
       <Typography variant="h4" sx={{ mb: 0.5, fontWeight: 600 }}>Settings</Typography>
-      <Typography variant="body2" sx={{ color: 'text.secondary', mb: 3 }}>Configure your DocVault workspace.</Typography>
+      <Typography variant="body2" sx={{ color: 'text.secondary', mb: 3 }}>Configure your Docuflow workspace.</Typography>
 
       <Box sx={{ display: 'flex', gap: 2 }}>
         {/* Settings nav */}

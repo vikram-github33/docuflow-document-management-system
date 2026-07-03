@@ -23,7 +23,7 @@ async function bootstrap() {
   );
 
   const options = new DocumentBuilder()
-    .setTitle('DocVault  API')
+    .setTitle('Docuflow  API')
     .setDescription('API for managing documents')
     .setVersion('1.0')
     .build();
