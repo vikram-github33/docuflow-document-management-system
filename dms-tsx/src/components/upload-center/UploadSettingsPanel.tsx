@@ -82,7 +82,7 @@ export const UploadSettingsPanel: React.FC<UploadSettingsPanelProps> = ({
       {/* Tags */}
       <TextField
         label="Tags"
-        placeholder="e.g. draft, q4, review"
+        // placeholder="e.g. draft, q4, review"
         // helperText="Comma separated"
         value={settings.tags.join(", ")}
         onChange={(e) =>
