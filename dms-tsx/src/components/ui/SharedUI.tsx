@@ -55,7 +55,7 @@ const STATUS_CONFIG: Record<string, { label: string; bg: string; color: string; 
 
 interface StatusPillProps { status: string; sx?: SxProps<Theme> }
 export const StatusPill: React.FC<StatusPillProps> = ({ status, sx }) => {
-  const cfg = STATUS_CONFIG[status] ?? STATUS_CONFIG['pending'];
+  const cfg = STATUS_CONFIG[status] ?? STATUS_CONFIG['active'];
   return (
     <Chip
       label={cfg.label}
