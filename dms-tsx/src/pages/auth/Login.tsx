@@ -28,8 +28,8 @@ interface LoginProps {
 }
 
 const Login: React.FC<LoginProps> = ({ onLogin }) => {
-  const [email, setEmail] = useState<string>("lalitaPadole@gmail.com");
-  const [password, setPassword] = useState<string>("Vikram@123");
+  const [email, setEmail] = useState<string>("vikrampadole@gmail.com");
+  const [password, setPassword] = useState<string>("Vikram@5678");
   const [mfa, setMfa] = useState<boolean>(false);
   const [code, setCode] = useState<string>("");
   const [error, setError] = useState<string>("");

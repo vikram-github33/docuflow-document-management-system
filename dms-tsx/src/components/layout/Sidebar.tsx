@@ -68,7 +68,12 @@ const Sidebar: React.FC<SidebarProps> = ({ open }) => {
   const location  = useLocation();
 
   if (!open) return null;
-
+ let user:any = JSON.parse(localStorage.getItem('user') || '{}');
+ function getInitials(firstName?: string, lastName?: string): string {
+  return `${firstName?.[0] ?? ""}${lastName?.[0] ?? ""}`.toUpperCase();
+}
+  const initials = getInitials(user?.firstName, user?.lastName);
+ console.log("serrrr",user)
   return (
     <Box
       component="nav"
@@ -139,10 +144,10 @@ const Sidebar: React.FC<SidebarProps> = ({ open }) => {
       <Divider />
       <Box sx={{ p: 1 }}>
         <ListItemButton sx={{ borderRadius: 2 }}>
-          <Avatar sx={{ width: 30, height: 30, bgcolor: '#DBEAFE', color: 'primary.dark', fontSize: 12, fontWeight: 600, mr: 1 }}>AS</Avatar>
+          <Avatar sx={{ width: 30, height: 30, bgcolor: '#DBEAFE', color: 'primary.dark', fontSize: 12, fontWeight: 600, mr: 1 }}>{initials}</Avatar>
           <Box sx={{ flex: 1, minWidth: 0 }}>
-            <Typography sx={{ fontSize: 12, fontWeight: 500, color: 'text.primary', lineHeight: 1.2 }}>Aisha Sharma</Typography>
-            <Typography sx={{ fontSize: 11, color: 'text.secondary' }}>Administrator</Typography>
+            <Typography sx={{ fontSize: 12, fontWeight: 500, color: 'text.primary', lineHeight: 1.2 }}>{user.firstName}{" "}{user.lastName}</Typography>
+            <Typography sx={{ fontSize: 11, color: 'text.secondary' }}>{user.designation}</Typography>
           </Box>
         </ListItemButton>
       </Box>
