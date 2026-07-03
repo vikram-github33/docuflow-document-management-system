@@ -6,7 +6,7 @@ import axios, {
 const BASE_URL =
   process.env.REACT_APP_API_URL 
 
-  console.log("BASE_URL_Log IN",BASE_URL)
+  // console.log("BASE_URL_Log IN",BASE_URL)
 
 const TIMEOUT_MS = 30000;
 

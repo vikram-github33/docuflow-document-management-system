@@ -7,6 +7,8 @@ import {
   Switch,
   Button,
   CircularProgress,
+  Autocomplete,
+  Chip,
 } from "@mui/material";
 import SettingsIcon from "@mui/icons-material/Settings";
 import UploadIcon from "@mui/icons-material/Upload";
@@ -80,21 +82,32 @@ export const UploadSettingsPanel: React.FC<UploadSettingsPanelProps> = ({
       </TextField>
 
       {/* Tags */}
-      <TextField
-        label="Tags"
-        // placeholder="e.g. draft, q4, review"
-        // helperText="Comma separated"
-        value={settings.tags.join(", ")}
-        onChange={(e) =>
+      <Autocomplete
+        multiple
+        freeSolo
+        options={[]}
+        value={settings.tags}
+        onChange={(_, newValue) => {
           update({
-            tags: e.target.value
-              .split(",")
-              .map((t) => t.trim())
-              .filter(Boolean),
-          })
+            tags: newValue.map((tag) => String(tag)),
+          });
+        }}
+        renderTags={(value, getTagProps) =>
+          value.map((option, index) => (
+            <Chip
+              // key={option}
+              label={option}
+              {...getTagProps({ index })}
+            />
+          ))
         }
-        size="small"
-        fullWidth
+        renderInput={(params) => (
+          <TextField
+            {...params}
+            label="Tags"
+            placeholder="Type a tag and press Enter"
+          />
+        )}
       />
 
       {/* Description */}

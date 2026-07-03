@@ -1,8 +1,9 @@
 import axios from "axios";
 import { API_ENDPOINTS } from "constants/document..constant";
-
+const BASE_URL =
+  process.env.REACT_APP_API_URL 
 const api = axios.create({
-  baseURL: process.env.VITE_API_URL ?? "http://localhost:7200",
+  baseURL: BASE_URL,
   headers: { "Content-Type": "application/json" },
 });
 
