@@ -13,8 +13,9 @@ import { GeminiProvider } from '../ai/gemini.provider';
 // import { DocumentActivity } from '../document-activity/documentactivity.entity';
 import { User } from '../user/user.entity';
 import { DocumentActivityModule } from '../document-activity/document-activity.module';
+import { DocumentShare } from '../document-share/document-share.entity';
 @Module({
-  imports: [TypeOrmModule.forFeature([Document,Folder,User]),StorageModule,DocumentActivityModule],
+  imports: [TypeOrmModule.forFeature([Document,Folder,User]),StorageModule,DocumentActivityModule,DocumentShare],
   controllers: [DocumentsController],
   providers: [DocumentsService,AwsService,OcrService,AiService,OllamaProvider,GeminiProvider,]
 })

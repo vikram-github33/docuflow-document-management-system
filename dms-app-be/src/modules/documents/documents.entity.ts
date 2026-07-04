@@ -14,6 +14,7 @@ import { User } from '../user/user.entity';
 import { Folder } from '../folders/folders.entity';
 import { Favorite } from 'src/modules/favorites/favourites.entity';
 import { DocumentActivity } from '../document-activity/documentactivity.entity';
+import { DocumentShare } from '../document-share/document-share.entity';
 
 @Entity('documents')
 export class Document {
@@ -243,6 +244,9 @@ export class Document {
 
   @OneToMany(() => DocumentActivity, (activity) => activity.document)
   activities: DocumentActivity[];
+
+  @OneToMany(() => DocumentShare, (share) => share.document)
+  shares: DocumentShare[];
 
   @CreateDateColumn({
     name: 'created_at',

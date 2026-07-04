@@ -14,6 +14,7 @@ import { ScheduleModule } from '@nestjs/schedule';
 import { AuthModule } from './modules/auth/auth.module';
 import { DashboardModule } from './modules/dashboard/dashboard.module';
 import { JwtStrategy } from './modules/auth/jwt.strategy';
+import { DocumentShareModule } from './modules/document-share/document-share.module';
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -29,7 +30,7 @@ import { JwtStrategy } from './modules/auth/jwt.strategy';
       database: process.env.DB_NAME,
 
       autoLoadEntities: true,
-      synchronize:true,
+      synchronize:process.env.NODE_ENV === 'production' ? false:true,
        ssl:
     process.env.NODE_ENV === 'production'
       ? { rejectUnauthorized: false }
@@ -41,7 +42,8 @@ import { JwtStrategy } from './modules/auth/jwt.strategy';
     StorageModule,
     FavoritesModule,
     AuthModule,
-    DashboardModule
+    DashboardModule,
+    DocumentShareModule
   ],
   controllers: [AppController],
   providers: [AppService],

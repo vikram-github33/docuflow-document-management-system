@@ -22,11 +22,20 @@ async function bootstrap() {
     }),
   );
 
-  const options = new DocumentBuilder()
-    .setTitle('Docuflow  API')
-    .setDescription('API for managing documents')
-    .setVersion('1.0')
-    .build();
+ const options = new DocumentBuilder()
+  .setTitle('Docuflow API')
+  .setDescription('API for managing documents')
+  .setVersion('1.0')
+  .addBearerAuth(
+    {
+      type: 'http',
+      scheme: 'bearer',
+      bearerFormat: 'JWT',
+      description: 'Enter JWT token',
+    },
+    'access-token',
+  )
+  .build();
   const document = SwaggerModule.createDocument(app, options, {
     ignoreGlobalPrefix: false,
   });

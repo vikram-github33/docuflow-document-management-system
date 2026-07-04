@@ -12,6 +12,7 @@ import { Document } from '../documents/documents.entity';
 import { Favorite } from 'src/modules/favorites/favourites.entity';
 import { RefreshToken } from '../auth/refresh-token/refresh-token.entity';
 import { DocumentActivity } from '../document-activity/documentactivity.entity';
+import { DocumentShare } from '../document-share/document-share.entity';
 export enum UserRole {
   ADMIN = 'ADMIN',
   MANAGER = 'MANAGER',
@@ -116,6 +117,12 @@ export class User {
 
   @OneToMany(() => DocumentActivity, (activity) => activity.user)
   documentActivities: DocumentActivity[];
+
+  @OneToMany(() => DocumentShare, (share) => share.sharedBy)
+  sharedDocuments: DocumentShare[];
+
+  @OneToMany(() => DocumentShare, (share) => share.sharedWith)
+  receivedSharedDocuments: DocumentShare[];
 
   @CreateDateColumn({
     name: 'created_at',
