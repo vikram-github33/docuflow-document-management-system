@@ -183,13 +183,17 @@ export class FoldersService {
   //   return roots;
   // }
 
-  async getFolderTreeWithFiles(): Promise<FolderTreeNodeDto[]> {
+  async getFolderTreeWithFiles(userId:string): Promise<FolderTreeNodeDto[]> {
     const folders = await this.folderRepo.find({
+      where:{
+        ownerId:userId,
+      },
       order: { name: 'ASC' },
     });
 
     const documents = await this.documentRepository.find({
       where: {
+        ownerId:userId,
         deletedAt: IsNull(),
       },
       relations: {

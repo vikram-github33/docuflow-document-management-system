@@ -92,7 +92,7 @@ export const TrashDocumentRow: React.FC<DocRowProps> = ({
       />
 
       {/* Size */}
-      <Typography variant="caption" color="text.secondary" sx={{ fontSize: 12 }}>
+      <Typography variant="caption" color="text.secondary" sx={{ fontSize: 12,alignItems:"center" }}>
         {formatFileSize(doc.fileSize)}
       </Typography>
 

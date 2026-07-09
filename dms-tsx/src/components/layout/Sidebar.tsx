@@ -36,26 +36,27 @@ const NAV: NavSection[] = [
     items: [
       { label: 'Dashboard',     icon: <DashboardIcon />,   path: '/dashboard' },
       { label: 'Documents',     icon: <FolderOpenIcon />,  path: '/documents', badge: '1.2k' },
-      { label: 'Shared with me',icon: <ShareIcon />,       path: '/coming-soon' },
+       { label: 'Upload Center', icon: <CloudUploadIcon />, path: '/upload',    badge: '3', badgeColor: 'warning' },
+      { label: 'Shared with me',icon: <ShareIcon />,       path: '/share-with-me' },
       { label: 'Favorites',     icon: <StarIcon />,        path: '/favorites' },
       { label: 'Recent',        icon: <AccessTimeIcon />,  path: '/recent-activity' },
       { label: 'Trash',         icon: <DeleteIcon />,      path: '/trash' },
+
     ],
   },
-  {
-    title: 'Work',
-    items: [
-      { label: 'Upload Center', icon: <CloudUploadIcon />, path: '/upload',    badge: '3', badgeColor: 'warning' },
-      { label: 'Approvals',     icon: <ChecklistIcon />,   path: '/approvals', badge: '7', badgeColor: 'error' },
-      { label: 'Search',        icon: <SearchIcon />,      path: '/search' },
-    ],
-  },
+  // {
+  //   title: 'Work',
+  //   items: [
+  //     { label: 'Approvals',     icon: <ChecklistIcon />,   path: '/approvals', badge: '7', badgeColor: 'error' },
+  //     { label: 'Search',        icon: <SearchIcon />,      path: '/search' },
+  //   ],
+  // },
   {
     title: 'Admin',
     items: [
-      { label: 'User Management', icon: <PeopleIcon />,    path: '/users' },
-      { label: 'Reports',         icon: <BarChartIcon />,  path: '/reports' },
-      { label: 'Audit Logs',      icon: <ListAltIcon />,   path: '/audit' },
+      // { label: 'User Management', icon: <PeopleIcon />,    path: '/users' },
+      { label: 'Reports',         icon: <BarChartIcon />,  path: '/coming-soon' },
+      { label: 'Audit Logs',      icon: <ListAltIcon />,   path: '/coming-soon' },
       { label: 'Settings',        icon: <SettingsIcon />,  path: '/settings' },
     ],
   },

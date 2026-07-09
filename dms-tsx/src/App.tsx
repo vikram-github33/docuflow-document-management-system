@@ -20,6 +20,7 @@ import FavouritesPage from "pages/FavouritesPage";
 import DashboardPage from "pages/DashboardPage";
 import SignupForm from "pages/auth/SignupForm";
 import RecentActivityPage from "pages/RecentActivityPage";
+import SharedWithMePage from "pages/SharedWithMePage";
 function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(
     !!localStorage.getItem("accessToken"),
@@ -61,6 +62,7 @@ function App() {
                 <Route path="/trash" element={<TrashPage />} />
                 <Route path="/favorites" element={<FavouritesPage />} />
                 <Route path="/coming-soon" element={<ComingSoon />} />
+                <Route path="/share-with-me" element={<SharedWithMePage/>} />
                 <Route path="/recent-activity" element={<RecentActivityPage/>} />
                 <Route
                   path="*"

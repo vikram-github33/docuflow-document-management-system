@@ -36,13 +36,15 @@ export class FoldersController {
     };
   }
   @Get()
+  
   getRootFolders() {
     return this.foldersService.getRootFolders();
   }
 
   @Get('tree')
-  getTree() {
-    return this.foldersService.getFolderTreeWithFiles();
+  @UseGuards(JwtAuthGuard)
+  getTree(@Request() req) {
+    return this.foldersService.getFolderTreeWithFiles(req?.user?.id);
   }
 
   @Get(':id')

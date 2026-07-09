@@ -1,8 +1,8 @@
-import React, { useCallback, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import DeleteIcon from "@mui/icons-material/Delete";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 import StarBorderIcon from "@mui/icons-material/StarBorder";
-import StarIcon from '@mui/icons-material/Star';
+import StarIcon from "@mui/icons-material/Star";
 import {
   Box,
   Typography,
@@ -27,6 +27,15 @@ import {
   DialogContent,
   DialogActions,
   Button,
+  Autocomplete,
+  TextField,
+  Select,
+  Stack,
+  FormControl,
+  InputLabel,
+  List,
+  ListItem,
+  ListItemAvatar,
 } from "@mui/material";
 import FolderIcon from "@mui/icons-material/Folder";
 // import MoreVertIcon from "@mui/icons-material/MoreVert";
@@ -51,7 +60,15 @@ import { useSnackbar } from "notistack";
 import type { FolderTreeNode, FolderDocument } from "../../types/folder.types";
 import { moveFilesInTrash } from "services/document.service";
 import { favouritesService } from "services/favourites.service";
-
+// import { Download, Info, Visibility } from "@mui/icons-material";
+import ShareIcon from "@mui/icons-material/Share";
+import { getAlluser } from "services/user.service";
+import { User } from "types/user.types";
+import CloseIcon from "@mui/icons-material/Close";
+import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
+import { sharedService } from "services/shared.service";
+import { documentShareService } from "services/document-share.service";
+import { idID } from "@mui/material/locale";
 function FileIcon({ fileType, color }: { fileType: string; color: string }) {
   const sx = { fontSize: 18, color };
   if (fileType === "application/pdf") return <PictureAsPdfIcon sx={sx} />;
@@ -74,14 +91,17 @@ export const FolderView: React.FC<FolderViewProps> = ({ folder }) => {
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const [selectedDoc, setSelectedDoc] = useState<any>(null);
   const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
-  const open = Boolean(anchorEl);
+  const [openShareDialog, setOpenShareDialog] = useState(false);
+  // const open = Boolean(anchorEl);
   const { enqueueSnackbar } = useSnackbar();
   const dispatch = useAppDispatch();
   const { tree } = useAppSelector((s) => s.folders);
   const color = folder.color ?? "#1976d2";
   const [sortField, setSortField] = useState<SortField>("name");
   const [sortDir, setSortDir] = useState<SortDir>("asc");
-
+  const [users, setUsers] = useState<User[]>([]);
+  const[selectedUserId,setSelectedUserId] = useState<any>(null)
+  const[permission,setPermission] = useState<any>(null)
   const handleSort = (field: SortField) => {
     if (sortField === field) setSortDir((d) => (d === "asc" ? "desc" : "asc"));
     else {
@@ -107,16 +127,15 @@ export const FolderView: React.FC<FolderViewProps> = ({ folder }) => {
     return sortDir === "asc" ? cmp : -cmp;
   });
 
-  const handleOpen = (event: React.MouseEvent<HTMLElement>, doc: any) => {
-    event.stopPropagation();
-    setOpenDeleteDialog(true);
-    setAnchorEl(null);
-    setSelectedDoc(doc);
+  const handleOpen = (event: React.MouseEvent<HTMLElement>) => {
+    setAnchorEl(event.currentTarget);
   };
 
   const handleClose = () => {
     setAnchorEl(null);
   };
+
+  const open = Boolean(anchorEl);
 
   const handleDelete = async () => {
     if (!selectedDoc) return;
@@ -136,15 +155,15 @@ export const FolderView: React.FC<FolderViewProps> = ({ folder }) => {
         };
         const res = await favouritesService.toggleFavouriteDoc(payload);
         // if (res.message) {
-          enqueueSnackbar(`${res.message}`, {
-            variant: "success",
-            autoHideDuration: 3000,
-            anchorOrigin: {
-              vertical: "top",
-              horizontal: "right",
-            },
-          });
-          dispatch(fetchFolderTree());
+        enqueueSnackbar(`${res.message}`, {
+          variant: "success",
+          autoHideDuration: 3000,
+          anchorOrigin: {
+            vertical: "top",
+            horizontal: "right",
+          },
+        });
+        dispatch(fetchFolderTree());
         // }
       } catch (error) {
         console.log("error", error);
@@ -152,6 +171,27 @@ export const FolderView: React.FC<FolderViewProps> = ({ folder }) => {
     },
     [],
   );
+  const getShareableUsers = async () => {
+    try {
+      const res = await getAlluser();
+      if (res) {
+        console.log("ressss", res);
+        setUsers(res?.data);
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+  const handleShare = async() =>{
+    const sharedWithUserId =selectedUserId?.id;
+      const res = await documentShareService.shareDocument(selectedDoc?.id,{
+        sharedWithUserId,
+        permission
+      })
+  }
+  useEffect(() => {
+    getShareableUsers();
+  }, []);
   return (
     <Box
       sx={{
@@ -385,7 +425,7 @@ export const FolderView: React.FC<FolderViewProps> = ({ folder }) => {
                       Modified
                     </TableSortLabel>
                   </TableCell> */}
-                    <TableCell
+                  <TableCell
                     sx={{ fontSize: 11, fontWeight: 600, py: 1, width: 100 }}
                   >
                     <TableSortLabel
@@ -477,8 +517,9 @@ export const FolderView: React.FC<FolderViewProps> = ({ folder }) => {
                           <IconButton
                             size="small"
                             onClick={(e) => {
-                              handleOpen(e, doc);
+                              handleOpen(e);
                               e.stopPropagation();
+                              setSelectedDoc(doc)
                             }}
                           >
                             <MoreVertIcon sx={{ fontSize: 15 }} />
@@ -494,7 +535,7 @@ export const FolderView: React.FC<FolderViewProps> = ({ folder }) => {
                 })}
               </TableBody>
             </Table>
-            <Menu
+            {/* <Menu
               anchorEl={anchorEl}
               open={open}
               onClose={handleClose}
@@ -513,6 +554,29 @@ export const FolderView: React.FC<FolderViewProps> = ({ folder }) => {
                 </ListItemIcon>
                 <ListItemText>Move to Trash</ListItemText>
               </MenuItem>
+            </Menu>*/}
+            <Menu anchorEl={anchorEl} open={open} onClose={handleClose}>
+              <MenuItem
+              //  onClick={handleOpenDocument}
+              >
+                <ListItemIcon>
+                  <DeleteIcon
+                    fontSize="small"
+                    color="error"
+                    onClick={() => {
+                      (setOpenDeleteDialog(true), console.log("ccdcdcdc"));
+                    }}
+                  />
+                </ListItemIcon>
+                Delete
+              </MenuItem>
+
+              <MenuItem onClick={() => setOpenShareDialog(true)}>
+                <ListItemIcon>
+                  <ShareIcon fontSize="small" />
+                </ListItemIcon>
+                Share
+              </MenuItem>
             </Menu>
             <Dialog
               open={openDeleteDialog}
@@ -522,8 +586,7 @@ export const FolderView: React.FC<FolderViewProps> = ({ folder }) => {
 
               <DialogContent>
                 Are you sure you want to move{" "}
-                <strong>{selectedDoc?.fileName}</strong>
-                {" "}to trash?
+                <strong>{selectedDoc?.fileName}</strong> to trash?
               </DialogContent>
 
               <DialogActions>
@@ -540,6 +603,132 @@ export const FolderView: React.FC<FolderViewProps> = ({ folder }) => {
                 </Button>
               </DialogActions>
             </Dialog>
+            <Dialog open={openShareDialog} onClose={() =>{setOpenShareDialog(false)}} fullWidth maxWidth="sm">
+              <DialogTitle>
+                <Stack
+                  direction="row"
+                  justifyContent="space-between"
+                  alignItems="center"
+                >
+                  <Typography variant="h6">Share with people</Typography>
+
+                  <IconButton onClick={() =>{setOpenShareDialog(false)}}>
+                    <CloseIcon />
+                  </IconButton>
+                </Stack>
+              </DialogTitle>
+
+              <DialogContent>
+                {/* <Typography variant="subtitle2" mb={1}>
+                  Share with people
+                </Typography> */}
+
+                <Stack spacing={2} mt={1}>
+                  <Autocomplete
+                    options={users}
+                    value={selectedUserId}
+                    onChange={(_, value) => setSelectedUserId(value)}
+                    getOptionLabel={(option) =>
+                      `${option.firstName} ${option.lastName} (${option.email})`
+                    }
+                    renderInput={(params) => (
+                      <TextField {...params} label="Search User" />
+                    )}
+                  />
+
+                  <FormControl fullWidth>
+                    <InputLabel>Permission</InputLabel>
+
+                    <Select
+                      value={permission}
+                      label="Permission"
+                      onChange={(e) => setPermission(e.target.value)}
+                    >
+                      <MenuItem value="VIEW">Viewer</MenuItem>
+
+                      <MenuItem value="EDIT">Editor</MenuItem>
+
+                      <MenuItem value="DOWNLOAD">Download</MenuItem>
+                    </Select>
+                  </FormControl>
+
+                  <Button
+                    variant="contained"
+                    startIcon={<ShareIcon />}
+                    onClick={() => {handleShare()}}
+                    disabled={!selectedUserId}
+                  >
+                    Share
+                  </Button>
+                </Stack>
+
+                {/* <Divider sx={{ my: 3 }} />
+
+                <Typography variant="subtitle2" mb={2}>
+                  People with access
+                </Typography> */}
+
+                {/* <List>
+                  {users.map((user) => (
+                    <ListItem
+                      key={user.id}
+                      secondaryAction={
+                        <Stack direction="row" spacing={1} alignItems="center">
+                          <Select
+                            size="small"
+                            // value={user.permission}
+                            // onChange={(e) =>
+                            //  updatePermission(user.id,e.target.value)
+                            // }
+                          >
+                            <MenuItem value="VIEW">Viewer</MenuItem>
+
+                            <MenuItem value="EDIT">Editor</MenuItem>
+
+                            <MenuItem value="DOWNLOAD">Download</MenuItem>
+                          </Select>
+
+                          <IconButton
+                            color="error"
+                            // onClick={() => removeUser(user.id)}
+                          >
+                            <DeleteOutlineIcon />
+                          </IconButton>
+                        </Stack>
+                      }
+                    >
+                      <ListItemAvatar>
+                        <Avatar>{user.firstName[0]}</Avatar>
+                      </ListItemAvatar>
+
+                      <ListItemText
+                        primary={`${user.firstName} ${user.lastName}`}
+                        secondary={user.email}
+                      />
+                    </ListItem>
+                  ))}
+
+                  {!users.length && (
+                    <Box py={4} textAlign="center">
+                      <Typography color="text.secondary">
+                        No users have access yet.
+                      </Typography>
+                    </Box>
+                  )}
+                </List> */}
+              </DialogContent>
+
+              <DialogActions>
+                <Button onClick={() =>{setOpenShareDialog(false)}}>Cancel</Button>
+
+                <Button variant="contained" onClick={() =>{setOpenShareDialog(false)}}>
+                  Done
+                </Button>
+              </DialogActions>
+            </Dialog>
+            {/* <IconButton onClick={handleOpen}>
+              <MoreVertIcon />
+            </IconButton> */}
           </Paper>
         </Box>
       )}

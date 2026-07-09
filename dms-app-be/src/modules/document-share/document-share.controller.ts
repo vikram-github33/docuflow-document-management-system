@@ -13,15 +13,28 @@ import {
 import { CreateDocumentShareDto } from 'src/dto/create-document-share.dto';
 import { JwtAuthGuard } from 'src/jwt/jwt-auth.guard';
 import { DocumentShareService } from './document-share.service';
-import { ApiBearerAuth } from '@nestjs/swagger';
+import {
+  ApiBearerAuth,
+  ApiBody,
+  ApiOperation,
+  ApiParam,
+  ApiTags,
+} from '@nestjs/swagger';
 import { UpdateDocumentShareDto } from 'src/dto/update-share-document.dto';
-
+@ApiTags('Document Share')
 @Controller('document-share')
 export class DocumentShareController {
   constructor(private readonly documentShareService: DocumentShareService) {}
   @ApiBearerAuth('access-token')
-  @UseGuards(JwtAuthGuard)
   @Post(':documentId/share')
+  @ApiOperation({ summary: 'Share document' })
+  @ApiParam({
+    name: 'documentId',
+    type: String,
+    description: 'Document ID',
+  })
+  @ApiBody({ type: CreateDocumentShareDto })
+  @UseGuards(JwtAuthGuard)
   async shareDocument(
     @Param('documentId', ParseUUIDPipe) documentId: string,
     @Body() dto: CreateDocumentShareDto,
@@ -41,7 +54,7 @@ export class DocumentShareController {
   }
   @ApiBearerAuth('access-token')
   @UseGuards(JwtAuthGuard)
-  @Post(':documentId/share')
+  // @Post(':documentId/share')
   @Get('shared-with-me')
   getSharedWithMe(@Request() req) {
     return this.documentShareService.getSharedWithMe(req.user.id);
