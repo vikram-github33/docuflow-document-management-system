@@ -9,7 +9,7 @@ import {
 
 import { User } from '../user/user.entity';
 import { Document } from '../documents/documents.entity';
-import { SharePermission } from 'src/enum/share-permission.enum';
+import { SharePermission } from '../../enum/share-permission.enum';
 
 @Entity('document_shares')
 export class DocumentShare {

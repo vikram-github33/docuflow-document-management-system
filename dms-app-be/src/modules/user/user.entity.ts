@@ -9,7 +9,7 @@ import {
 } from 'typeorm';
 import { Folder } from '../folders/folders.entity';
 import { Document } from '../documents/documents.entity';
-import { Favorite } from 'src/modules/favorites/favourites.entity';
+import { Favorite } from '../../modules/favorites/favourites.entity';
 import { RefreshToken } from '../auth/refresh-token/refresh-token.entity';
 import { DocumentActivity } from '../document-activity/documentactivity.entity';
 import { DocumentShare } from '../document-share/document-share.entity';

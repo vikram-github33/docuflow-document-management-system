@@ -7,7 +7,7 @@ import {
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import { User } from '../user/user.entity';
-import { ActivityType } from 'src/enum/activity.enum';
+import { ActivityType } from '../../enum/activity.enum';
 import { Document } from '../documents/documents.entity';
 
 import { Folder } from '../folders/folders.entity';

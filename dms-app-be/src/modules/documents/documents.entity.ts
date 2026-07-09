@@ -12,7 +12,7 @@ import {
 
 import { User } from '../user/user.entity';
 import { Folder } from '../folders/folders.entity';
-import { Favorite } from 'src/modules/favorites/favourites.entity';
+import { Favorite } from '../favorites/favourites.entity';
 import { DocumentActivity } from '../document-activity/documentactivity.entity';
 import { DocumentShare } from '../document-share/document-share.entity';
 

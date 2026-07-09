@@ -6,6 +6,7 @@ import {
   ManyToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
+import { Document } from '../documents/documents.entity';
 
 @Entity('document_embeddings')
 export class DocumentEmbedding {
