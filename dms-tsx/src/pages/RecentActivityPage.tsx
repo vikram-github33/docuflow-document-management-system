@@ -170,7 +170,10 @@ const RecentActivityPage: React.FC = () => {
         )}
 
         {!loading && items.length > 0 && (
-          <Table size="small" stickyHeader>
+          <Table size="small" stickyHeader  sx={{
+    width: "100%",
+    tableLayout: "fixed",
+  }}>
             <TableHead>
               <TableRow>
                 {COL_HEADERS.map(h => (

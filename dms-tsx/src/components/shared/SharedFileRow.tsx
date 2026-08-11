@@ -120,7 +120,7 @@ export const SharedFileRow: React.FC<Props> = ({ item, onView, onDownload, onRem
 
       {/* Actions */}
       <TableCell sx={{ width: 100 }} onClick={e => e.stopPropagation()}>
-        <Box className="row-actions" sx={{ display: 'flex', gap: 0.5, transition: 'opacity 0.15s' }}>
+        <Box className="" sx={{ display: 'flex', gap: 0.5, transition: 'opacity 0.15s' }}>
           <Tooltip title="Download">
             <IconButton size="small" onClick={() => onDownload(item)} sx={{ p: 0.6 }}>
               <DownloadIcon sx={{ fontSize: 16 }} />
@@ -131,11 +131,11 @@ export const SharedFileRow: React.FC<Props> = ({ item, onView, onDownload, onRem
               <VisibilityIcon sx={{ fontSize: 16 }} />
             </IconButton>
           </Tooltip>
-          <Tooltip title="Remove access">
+          {/* <Tooltip title="Remove access">
             <IconButton size="small" color="error" onClick={() => onRemove(item)} sx={{ p: 0.6 }}>
               <CloseIcon sx={{ fontSize: 16 }} />
             </IconButton>
-          </Tooltip>
+          </Tooltip> */}
         </Box>
       </TableCell>
     </TableRow>

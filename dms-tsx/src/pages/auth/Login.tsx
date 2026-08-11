@@ -13,6 +13,7 @@ import {
   InputAdornment,
   IconButton,
   Link,
+  CircularProgress,
 } from "@mui/material";
 import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
 import GoogleIcon from "@mui/icons-material/Google";
@@ -34,6 +35,7 @@ const Login: React.FC<LoginProps> = ({ onLogin }) => {
   const [code, setCode] = useState<string>("");
   const [error, setError] = useState<string>("");
   const [showPassword, setShowPassword] = useState(false);
+  const [loading, setLoading] = useState(false);
   const dispatch = useAppDispatch();
   const handleLogin = async () => {
     if (!email.trim() || !password.trim()) {
@@ -44,6 +46,7 @@ const Login: React.FC<LoginProps> = ({ onLogin }) => {
     setError("");
 
     try {
+      setLoading(true)
       const payload = {
         email,
         password,
@@ -69,8 +72,10 @@ const Login: React.FC<LoginProps> = ({ onLogin }) => {
 
       // If you use React Router:
       // navigate("/dashboard");
+      setLoading(false)
     } catch (err: any) {
       setError(err?.response?.data?.message || "Invalid email or password.");
+      setLoading(false)
     }
   };
   const handleVerify = (): void => {
@@ -205,7 +210,18 @@ const Login: React.FC<LoginProps> = ({ onLogin }) => {
               </Typography> */}
             </Box>
 
-            <Button
+            {loading ? (
+               <Button
+              variant="contained"
+              fullWidth
+              onClick={handleLogin}
+              sx={{ mb: 1.5, py: 1, fontWeight: 600 }}
+            >
+              <CircularProgress size={24} color="inherit" />
+            </Button>
+              
+            ) : (
+              <Button
               variant="contained"
               fullWidth
               onClick={handleLogin}
@@ -213,6 +229,7 @@ const Login: React.FC<LoginProps> = ({ onLogin }) => {
             >
               Sign in
             </Button>
+            )}
 
             <Grid item xs={12}>
               <Typography
