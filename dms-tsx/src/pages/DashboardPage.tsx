@@ -118,7 +118,7 @@ const DashboardPage: React.FC = () => {
           </Avatar>
           <Box>
             <Typography variant="h5" fontWeight={600} lineHeight={1.2}>
-              {getGreeting()}, Aisha 👋
+              {getGreeting()},
             </Typography>
             <Typography variant="body2" color="text.secondary" sx={{ fontSize: 13 }}>
               Here's what's happening in your workspace today.
