@@ -18,7 +18,13 @@ export class UserService {
       passwordHash: dto.passwordHash,
     });
 
-    return this.userRepository.save(user);
+    const savedUser =  this.userRepository.save(user);
+
+    return {
+      sucess:true,
+      message:"User Register Successfully",
+      data:savedUser
+    }
   }
 
    async findAll() {

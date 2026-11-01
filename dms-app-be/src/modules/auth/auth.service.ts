@@ -29,10 +29,10 @@ export class AuthService {
     private readonly jwtService: JwtService,
     private readonly configService: ConfigService,
   ) {
-       console.log(
-    'JWT_SECRET:',
-    this.configService.get('JWT_SECRET'),
-  );
+  //      console.log(
+  //   'JWT_SECRET:',
+  //   this.configService.get('JWT_SECRET'),
+  // );
   }
 
   async register(registerDto: RegisterDto) {

@@ -10,6 +10,7 @@ import { JwtStrategy } from './jwt.strategy';
 
 import { User } from '../user/user.entity';
 import { RefreshToken } from './refresh-token/refresh-token.entity';
+import { Permissionguard } from '../common/guards/permission.guards';
 
 @Module({
   imports: [
@@ -35,15 +36,14 @@ import { RefreshToken } from './refresh-token/refresh-token.entity';
 
   providers: [
     AuthService,
-    JwtStrategy, // ✅ Register here
+    JwtStrategy,
+
+     // Register PermissionGuard
+    Permissionguard,
   ],
 
-  exports: [PassportModule, JwtModule],
+  exports: [PassportModule, JwtModule,Permissionguard],
 })
 export class AuthModule {
-   constructor(
-    private readonly jwtStrategy: JwtStrategy,
-  ) {
-    console.log('JwtStrategy injected');
-  }
+ 
 }

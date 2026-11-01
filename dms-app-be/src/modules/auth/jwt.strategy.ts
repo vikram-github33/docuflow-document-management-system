@@ -20,7 +20,7 @@ export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
     private readonly userRepository: Repository<User>,
     private readonly configService: ConfigService,
   ) {
-    console.log('JWT Secret:', configService.get('JWT_SECRET'));
+    // console.log('JWT Secret:', configService.get('JWT_SECRET'));
 
     super({
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),

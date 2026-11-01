@@ -17,10 +17,14 @@ import { CreateFolderDto } from './../../dto/folder/create-folder.dto';
 import { UpdateFolderDto } from './../../dto/folder/update-folder.dto';
 import { AuthGuard } from '@nestjs/passport';
 import { JwtAuthGuard } from 'src/jwt/jwt-auth.guard';
+import { Permissionguard } from '../common/guards/permission.guards';
+import { RequirePermissions } from '../common/decorators/require-permissions.decorator';
+import { permission } from 'process';
+import { Permission } from '../common/permissions/permission';
 // import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 
 @Controller('folders')
-// @UseGuards(JwtAuthGuard)
+@UseGuards( AuthGuard('jwt'),Permissionguard)
 export class FoldersController {
   constructor(private readonly foldersService: FoldersService) {}
 
@@ -35,14 +39,14 @@ export class FoldersController {
       data: folder,
     };
   }
+
   @Get()
-  
   getRootFolders() {
     return this.foldersService.getRootFolders();
   }
 
   @Get('tree')
-  @UseGuards(JwtAuthGuard)
+  @RequirePermissions(Permission.DOCUMENT_READ)
   getTree(@Request() req) {
     return this.foldersService.getFolderTreeWithFiles(req?.user?.id);
   }
