@@ -23,7 +23,8 @@ export class DocumentActivityService {
     user: User,
     document: Document,
     type: ActivityType,
-    extra?: { sharedWith?: string; fromPath?: string; toPath?: string },
+    extra?: { sharedWith?: string; fromPath?: string; toPath?: string, versionNumber?: number;
+  restoredFromVersion?: number; },
   ): string {
     const name = document.fileName;
     switch (type) {
@@ -65,6 +66,15 @@ export class DocumentActivityService {
 
       case ActivityType.UNFAVORITED:
         return `${user.firstName} removed "${name}" from favourites`;
+
+        case ActivityType.VERSION_UPLOADED:
+  return `${user.firstName} uploaded version ${extra?.versionNumber} of "${name}"`;
+
+case ActivityType.VERSION_RESTORED:
+  return `${user.firstName} restored version ${extra?.restoredFromVersion} of "${name}" as version ${extra?.versionNumber}`;
+
+case ActivityType.VERSION_DOWNLOADED:
+  return `${user.firstName} downloaded version ${extra?.versionNumber} of "${name}"`;
 
       default:
         return `${user.firstName} performed an action on "${name}"`;

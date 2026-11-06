@@ -13,6 +13,7 @@ import { Favorite } from '../../modules/favorites/favourites.entity';
 import { RefreshToken } from '../auth/refresh-token/refresh-token.entity';
 import { DocumentActivity } from '../document-activity/documentactivity.entity';
 import { DocumentShare } from '../document-share/document-share.entity';
+import { DocumentVersion } from '../document-version/document-version.entity';
 export enum UserRole {
   ADMIN = 'ADMIN',
   MANAGER = 'MANAGER',
@@ -123,6 +124,11 @@ export class User {
 
   @OneToMany(() => DocumentShare, (share) => share.sharedWith)
   receivedSharedDocuments: DocumentShare[];
+
+  @OneToMany(() => DocumentVersion, (version) => version.uploader)
+  // @JoinColumn({ name: 'uploader' })
+  uploadedDocumentVersions: DocumentVersion[];
+
 
   @CreateDateColumn({
     name: 'created_at',

@@ -15,7 +15,7 @@ import { Folder } from '../folders/folders.entity';
 import { Favorite } from '../favorites/favourites.entity';
 import { DocumentActivity } from '../document-activity/documentactivity.entity';
 import { DocumentShare } from '../document-share/document-share.entity';
-
+import { DocumentVersion } from './../document-version/document-version.entity';
 @Entity('documents')
 export class Document {
   @PrimaryGeneratedColumn('uuid')
@@ -115,6 +115,9 @@ export class Document {
     nullable: true,
   })
   fileUrl: string;
+
+  @OneToMany(() => DocumentVersion, (version) => version.document)
+  versions: DocumentVersion[];
 
   @Column({
     length: 30,

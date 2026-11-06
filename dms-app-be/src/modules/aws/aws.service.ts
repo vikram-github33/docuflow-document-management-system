@@ -25,7 +25,10 @@ export class AwsService {
       },
     });
   }
-
+private extractS3Key(fileUrl: string): string {
+  const url = new URL(fileUrl);
+  return decodeURIComponent(url.pathname.substring(1));
+}
   async uploadFile(file: Express.Multer.File, key: string) {
     const command = new PutObjectCommand({
       Bucket: this.configService.get('AWS_S3_BUCKET'),
@@ -42,6 +45,22 @@ export class AwsService {
     return fileUrl;
   }
 
+  async downloadFile(fileUrl: string): Promise<Buffer> {
+  const key = this.extractS3Key(fileUrl);
+
+  const command = new GetObjectCommand({
+    Bucket: this.configService.get('AWS_S3_BUCKET'),
+    Key: key,
+  });
+
+  const response = await this.s3Client.send(command);
+
+  if (!response.Body) {
+    throw new Error('File not found in S3');
+  }
+
+  return Buffer.from(await response.Body.transformToByteArray());
+}
   async getSignedDownloadUrl(key: string) {
     const command = new GetObjectCommand({
       Bucket: this.configService.get('AWS_S3_BUCKET'),

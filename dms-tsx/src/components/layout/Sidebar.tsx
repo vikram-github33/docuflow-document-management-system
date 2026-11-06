@@ -74,7 +74,7 @@ const Sidebar: React.FC<SidebarProps> = ({ open }) => {
   return `${firstName?.[0] ?? ""}${lastName?.[0] ?? ""}`.toUpperCase();
 }
   const initials = getInitials(user?.firstName, user?.lastName);
- console.log("serrrr",user)
+//  console.log("serrrr",user)
   return (
     <Box
       component="nav"

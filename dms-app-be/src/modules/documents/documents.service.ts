@@ -11,6 +11,7 @@ import { DocumentActivity } from '../document-activity/documentactivity.entity';
 import { ActivityType } from 'src/enum/activity.enum';
 import { User } from '../user/user.entity';
 import { DocumentActivityService } from '../document-activity/document-activity.service';
+import { DocumentVersion } from '../document-version/document-version.entity';
 @Injectable()
 export class DocumentsService {
   constructor(
@@ -24,25 +25,84 @@ export class DocumentsService {
     private readonly ocrService: OcrService,
     private readonly aiService: AiService,
     private readonly documentActivityService: DocumentActivityService,
+    @InjectRepository(DocumentVersion)
+    private readonly documentVersionRepository: Repository<DocumentVersion>,
   ) {}
-  async upload(file: Express.Multer.File, body: UploadDocumentDto,userId:string) {
-    // console.log("user",receiveUser)
-    const fileKey = `documents/${Date.now()}-${file.originalname}`;
+  async upload(
+    file: Express.Multer.File,
+    body: UploadDocumentDto,
+    userId: string,
+  ) {
+    const user = await this.userRepository.findOne({
+      where: { id: userId },
+    });
+
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+
+    const fileKey = `document/${Date.now()}-${file.originalname}`;
     const uploadResult = await this.awsService.uploadFile(file, fileKey);
 
     const document = await this.documentRepository.save({
       fileName: file.originalname,
       fileUrl: uploadResult,
       fileType: file.mimetype,
+      sizeBytes: String(file.size),
       folderId: body.folderId,
       ocrStatus: 'processing',
       aiStatus: 'processing',
-
-      ownerId:userId,
+      ownerId: userId,
+      versionCount: 1,
     });
+    const version = await this.documentVersionRepository.save({
+      documentId: document.id,
+      versionNumber: 1,
+      fileName: file.originalname,
+      fileUrl: uploadResult,
+      fileType: file.mimetype,
+      sizeBytes: String(file.size),
+      uploadedBy: userId,
+      changeDescription: 'Initial upload',
+    });
+    document.currentVersionId = version.id;
+
+    await this.documentRepository.save(document);
+
+    await this.documentActivityService.createActivity(
+      user,
+      document,
+      ActivityType.UPLOADED,
+    );
+
+    setImmediate(() => {
+      this.processDocument(document.id, file);
+    });
+    console.log('Version created:', version);
+
+    return document;
+  }
+
+  async uploadnewVersion(
+    documentId,
+    file: Express.Multer.File,
+    userId: string,
+    changeDescription?: string,
+  ) {
+    const document = await this.documentRepository.findOne({
+      where: {
+        id: documentId,
+      },
+    });
+
+    if (!document) {
+      throw new NotFoundException('Document not found');
+    }
+
+    // Find the user uploading this version
     const user = await this.userRepository.findOne({
       where: {
-        id:userId,
+        id: userId,
       },
     });
 
@@ -50,27 +110,270 @@ export class DocumentsService {
       throw new NotFoundException('User not found');
     }
 
-    // const activity = this.activityRepository.create({
-    //   user,
-    //   document,
-    //   activityType: ActivityType.UPLOADED,
-    // });
+    const fileKey = `documents/${documentId}-versions-${Date.now()}-${file.originalname}`;
+    // Upload new file to S3
+    const uploadResult = await this.awsService.uploadFile(file, fileKey);
 
-    // await this.activityRepository.save(activity);
+    const nextVersionNumber = document.versionCount + 1;
+    // Create new version
+    const version = await this.documentVersionRepository.save({
+      documentId: document.id,
+      versionNumber: nextVersionNumber,
+      fileName: file.originalname,
+      fileUrl: uploadResult,
+      fileType: file.mimetype,
+      sizeBytes: String(file.size),
+      uploadedBy: userId,
+      changeDescription: changeDescription || 'Document updated',
+    });
+    // Update current document
+    document.fileName = file.originalname;
+    document.fileUrl = uploadResult;
+    document.fileType = file.mimetype;
+    document.sizeBytes = String(file.size);
+
+    document.currentVersionId = version.id;
+    document.versionCount = nextVersionNumber;
+
+    // Reset processing status for new file
+    document.ocrText = undefined;
+    document.ocrStatus = 'processing';
+
+    document.aiSummary = undefined;
+    document.aiTags = undefined;
+    document.documentCategory = undefined;
+    document.aiStatus = 'processing';
+    document.aiProcessedAt = undefined;
 
     await this.documentActivityService.createActivity(
       user,
       document,
-      ActivityType.UPLOADED,
+      ActivityType.MOVED_TO_TRASH,
     );
-    // background processing
-    setImmediate(() => {
-      this.processDocument(document.id, file);
-    });
-    console.log(`Processing document ${document?.id}`);
-    return document;
   }
 
+  async downloadVersion(documentId: string, versionId: string, user: any) {
+    const document = await this.documentRepository.findOne({
+      where: {
+        id: documentId,
+      },
+    });
+    if (!document) {
+      throw new NotFoundException('Document not found');
+    }
+    const version = await this.documentVersionRepository.findOne({
+      where: {
+        documentId,
+        id: versionId,
+      },
+    });
+
+    if (!version) {
+      throw new NotFoundException('Document version not found');
+    }
+    // Download file from S3
+    const buffer = await this.awsService.downloadFile(version.fileUrl);
+    await this.documentActivityService.createActivity(
+      user,
+      document,
+      ActivityType.VERSION_DOWNLOADED,
+      // description:  `Downloaded version ${version.versionNumber}`,
+    );
+    return {
+      fileName: version.fileName,
+      fileType: version.fileType,
+      buffer,
+    };
+  }
+
+  async getVersionHistory(documentId: string, userId: string) {
+    // Check whether document exists
+    const document = await this.documentRepository.findOne({
+      where: {
+        id: documentId,
+      },
+    });
+
+    if (!document) {
+      throw new NotFoundException('Document not found');
+    }
+
+    // TODO: Check document ownership or user's permission
+    // before returning version history.
+
+    const versions = await this.documentVersionRepository.find({
+      where: {
+        documentId,
+      },
+      relations: {
+        uploader: true,
+      },
+      order: {
+        versionNumber: 'DESC',
+      },
+    });
+
+    return {
+      documentId: document.id,
+      fileName: document.fileName,
+      currentVersionId: document.currentVersionId,
+      versionCount: document.versionCount,
+      versions: versions.map((version) => ({
+        id: version.id,
+        versionNumber: version.versionNumber,
+        fileName: version.fileName,
+        fileType: version.fileType,
+        sizeBytes: version.sizeBytes,
+        checksumSha256: version.checksumSha256,
+        uploadedBy: version.uploadedBy,
+        uploadedByName: userId,
+        changeDescription: version.changeDescription,
+        createdAt: version.createdAt,
+      })),
+    };
+  }
+
+  async restoreVersion(
+    documentId: string,
+    versionId: string,
+    user: any,
+    changeDescription?: string,
+  ) {
+    // 1. Find document
+    const document = await this.documentRepository.findOne({
+      where: { id: documentId },
+    });
+
+    if (!document) {
+      throw new NotFoundException('Document not found');
+    }
+
+    // TODO: Verify user ownership or restore permission.
+
+    // 2. Find requested historical version
+    const oldVersion = await this.documentVersionRepository.findOne({
+      where: {
+        id: versionId,
+        documentId,
+      },
+    });
+
+    if (!oldVersion) {
+      throw new NotFoundException('Document version not found');
+    }
+
+    // 3. Download old file from S3
+    const buffer = await this.awsService.downloadFile(oldVersion.fileUrl);
+
+    // 4. Create a new Multer-compatible file object
+    const file = {
+      originalname: oldVersion.fileName,
+      mimetype: oldVersion.fileType,
+      buffer,
+      size: buffer.length,
+    } as Express.Multer.File;
+
+    // 5. Generate new S3 key
+    const nextVersionNumber = document.versionCount + 1;
+
+    const s3Key =
+      `documents/${documentId}/versions/` +
+      `${Date.now()}-${oldVersion.fileName}`;
+
+    // 6. Upload restored file as a NEW S3 object
+    const fileUrl = await this.awsService.uploadFile(file, s3Key);
+
+    // 7. Create new version record
+    const newVersion = this.documentVersionRepository.create({
+      documentId,
+      versionNumber: nextVersionNumber,
+      fileName: oldVersion.fileName,
+      fileUrl,
+      fileType: oldVersion.fileType,
+      sizeBytes: String(buffer.length),
+      checksumSha256: oldVersion.checksumSha256,
+      uploadedBy: user.id,
+      changeDescription:
+        changeDescription ||
+        `Restored from version ${oldVersion.versionNumber}`,
+    });
+
+    const savedVersion = await this.documentVersionRepository.save(newVersion);
+
+    // 8. Update main document
+    document.fileName = oldVersion.fileName;
+    document.fileUrl = fileUrl;
+    document.fileType = oldVersion.fileType;
+    document.sizeBytes = String(buffer.length);
+    document.checksumSha256 = oldVersion.checksumSha256;
+    document.currentVersionId = savedVersion.id;
+    document.versionCount = nextVersionNumber;
+
+    const updatedDocument = await this.documentRepository.save(document);
+    await this.documentActivityService.createActivity(
+      user,
+      document,
+      ActivityType.VERSION_RESTORED,
+      // description: `Restored version ${oldVersion.versionNumber} as version ${savedVersion.versionNumber}`,
+    );
+
+    return {
+      document: updatedDocument,
+      restoredFromVersion: oldVersion.versionNumber,
+      newVersion: savedVersion,
+    };
+  }
+
+  async compareVersions(
+    documentId:string,
+      version1:string,
+      version2:string,
+  ){ 
+const versions = await this.documentVersionRepository.find({
+  where:[
+    {id:version1,documentId},
+    {id:version2,documentId}
+  ],
+  relations:{
+    uploader:true
+  }
+})
+ if (versions.length !== 2) {
+    throw new NotFoundException('One or both versions not found');
+  }
+
+  const[first,second] = versions;
+   return {
+    documentId,
+    version1: {
+      id: first.id,
+      versionNumber: first.versionNumber,
+      fileName: first.fileName,
+      fileType: first.fileType,
+      sizeBytes: first.sizeBytes,
+      checksumSha256: first.checksumSha256,
+      uploadedBy: first.uploader,
+      createdAt: first.createdAt,
+    },
+    version2: {
+      id: second.id,
+      versionNumber: second.versionNumber,
+      fileName: second.fileName,
+      fileType: second.fileType,
+      sizeBytes: second.sizeBytes,
+      checksumSha256: second.checksumSha256,
+      uploadedBy: second.uploader,
+      createdAt: second.createdAt,
+    },
+    changes: {
+      fileNameChanged: first.fileName !== second.fileName,
+      fileSizeChanged: first.sizeBytes !== second.sizeBytes,
+      contentChanged:
+        first.checksumSha256 !== second.checksumSha256,
+      fileTypeChanged: first.fileType !== second.fileType,
+    },
+  };
+  }
   private parseAiTags(response: string): string[] {
     try {
       const match = response.match(/\[[\s\S]*\]/);
